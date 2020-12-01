@@ -6,50 +6,53 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.NativeMonitorInfo;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
-import org.jnativehook.mouse.*;
+import org.jnativehook.mouse.NativeMouseEvent;
+import org.jnativehook.mouse.NativeMouseInputListener;
+import org.jnativehook.mouse.NativeMouseWheelEvent;
+import org.jnativehook.mouse.NativeMouseWheelListener;
 
-public class MouseKeyboardListenerHelper  implements NativeMouseInputListener, NativeKeyListener, NativeMouseWheelListener {
-    private static NativeMouseInputListener nativeMouseInputListener;
-    private static NativeKeyListener nativeKeyListener;
-    private static NativeMouseWheelListener nativeMouseWheelListener;
-    private static boolean exitByEsc = true;
-    private static MouseKeyboardListenerHelper listener=new MouseKeyboardListenerHelper();
-    public static void setNativeMouseInputListener(NativeMouseInputListener nativeMouseInputListener) {
-        MouseKeyboardListenerHelper.nativeMouseInputListener = nativeMouseInputListener;
+public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeMouseInputListener, NativeKeyListener, NativeMouseWheelListener {
+    private NativeMouseInputListener nativeMouseInputListener;
+    private NativeKeyListener nativeKeyListener;
+    private NativeMouseWheelListener nativeMouseWheelListener;
+    private boolean exitByEsc = true;
+
+    public void setNativeMouseInputListener(NativeMouseInputListener nativeMouseInputListener) {
+        MouseKeyboardListenerHelper.this.nativeMouseInputListener = nativeMouseInputListener;
     }
 
-    public static void setNativeKeyListener(NativeKeyListener nativeKeyListener) {
-        MouseKeyboardListenerHelper.nativeKeyListener = nativeKeyListener;
+    public void setNativeKeyListener(NativeKeyListener nativeKeyListener) {
+        MouseKeyboardListenerHelper.this.nativeKeyListener = nativeKeyListener;
     }
 
-    public static void setNativeMouseWheelListener(NativeMouseWheelListener nativeMouseWheelListener) {
-        MouseKeyboardListenerHelper.nativeMouseWheelListener = nativeMouseWheelListener;
+    public void setNativeMouseWheelListener(NativeMouseWheelListener nativeMouseWheelListener) {
+        MouseKeyboardListenerHelper.this.nativeMouseWheelListener = nativeMouseWheelListener;
     }
 
-    public static void register(boolean exitByEsc) {
-        MouseKeyboardListenerHelper.exitByEsc = exitByEsc;
+    public void register(boolean exitByEsc) {
+        MouseKeyboardListenerHelper.this.exitByEsc = exitByEsc;
         try {
-            GlobalScreen.addNativeKeyListener(listener);
-            GlobalScreen.addNativeMouseListener(listener);
-            GlobalScreen.addNativeMouseMotionListener(listener);
-            GlobalScreen.addNativeMouseWheelListener(listener);
-            GlobalScreen.registerNativeHook();
+            addNativeKeyListener(this);
+            addNativeMouseListener(this);
+            addNativeMouseMotionListener(this);
+            addNativeMouseWheelListener(this);
+            registerNativeHook();
         } catch (NativeHookException ex) {
             ex.printStackTrace();
         }
     }
 
-    public static NativeMonitorInfo[] getNativeMonitorInfo() {
-        return GlobalScreen.getNativeMonitors();
+    public NativeMonitorInfo[] getNativeMonitorInfo() {
+        return getNativeMonitors();
     }
 
-    public static void unRegister() {
+    public void unRegister() {
         try {
-            GlobalScreen.removeNativeKeyListener(listener);
-            GlobalScreen.removeNativeMouseListener(listener);
-            GlobalScreen.removeNativeMouseMotionListener(listener);
-            GlobalScreen.removeNativeMouseWheelListener(listener);
-            GlobalScreen.unregisterNativeHook();
+            removeNativeKeyListener(this);
+            removeNativeMouseListener(this);
+            removeNativeMouseMotionListener(this);
+            removeNativeMouseWheelListener(this);
+            unregisterNativeHook();
         } catch (NativeHookException nativeHookException) {
             nativeHookException.printStackTrace();
         }
