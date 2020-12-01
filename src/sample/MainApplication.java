@@ -2,14 +2,12 @@ package sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.module.SetModule;
+import sample.module.MouseRobotModule;
 
 import java.io.IOException;
-import java.net.URL;
 
 public class MainApplication extends Application {
 
@@ -30,7 +28,7 @@ public class MainApplication extends Application {
         } catch (IOException e) {
         }
         Scene scene = new Scene(root, 600, 500);
-        primaryStage.setTitle("刷钱吧");
+        primaryStage.setTitle("脚本工具");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -38,7 +36,7 @@ public class MainApplication extends Application {
     }
 
     private void initialize(Stage primaryStage) {
-        SetModule setModule = new SetModule();
-        setModule.initialize(controller);
+        MouseRobotModule mouseRobotModule = new MouseRobotModule();
+        mouseRobotModule.initialize(controller);
     }
 }

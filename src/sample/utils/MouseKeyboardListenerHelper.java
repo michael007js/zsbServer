@@ -6,19 +6,22 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.NativeMonitorInfo;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
-import org.jnativehook.mouse.NativeMouseEvent;
-import org.jnativehook.mouse.NativeMouseInputListener;
-import org.jnativehook.mouse.NativeMouseWheelEvent;
-import org.jnativehook.mouse.NativeMouseWheelListener;
+import org.jnativehook.mouse.*;
 
 public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeMouseInputListener, NativeKeyListener, NativeMouseWheelListener {
-    private NativeMouseInputListener nativeMouseInputListener;
+    private NativeMouseListener nativeMouseListener;
+    private NativeMouseMotionListener nativeMouseMotionListener;
     private NativeKeyListener nativeKeyListener;
     private NativeMouseWheelListener nativeMouseWheelListener;
     private boolean exitByEsc = true;
+    private boolean isLog;
 
-    public void setNativeMouseInputListener(NativeMouseInputListener nativeMouseInputListener) {
-        MouseKeyboardListenerHelper.this.nativeMouseInputListener = nativeMouseInputListener;
+    public void setNativeMouseListener(NativeMouseListener nativeMouseListener) {
+        this.nativeMouseListener = nativeMouseListener;
+    }
+
+    public void setNativeMouseMotionListener(NativeMouseMotionListener nativeMouseMotionListener) {
+        this.nativeMouseMotionListener = nativeMouseMotionListener;
     }
 
     public void setNativeKeyListener(NativeKeyListener nativeKeyListener) {
@@ -30,6 +33,7 @@ public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeM
     }
 
     public void register(boolean exitByEsc) {
+        log.setUseParentHandlers(false);
         MouseKeyboardListenerHelper.this.exitByEsc = exitByEsc;
         try {
             addNativeKeyListener(this);
@@ -59,37 +63,47 @@ public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeM
     }
 
     public void nativeMouseClicked(NativeMouseEvent e) {
-        System.out.println("鼠标点击: " + e.getClickCount());
-        if (nativeMouseInputListener != null) {
-            nativeMouseInputListener.nativeMouseClicked(e);
+        if (isLog) {
+            System.out.println("鼠标点击: " + e.getClickCount());
+        }
+        if (nativeMouseListener != null) {
+            nativeMouseListener.nativeMouseClicked(e);
         }
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
-        System.out.println("鼠标按下: " + e.getButton());
-        if (nativeMouseInputListener != null) {
-            nativeMouseInputListener.nativeMousePressed(e);
+        if (isLog) {
+            System.out.println("鼠标按下: " + e.getButton());
+        }
+        if (nativeMouseListener != null) {
+            nativeMouseListener.nativeMousePressed(e);
         }
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
-        System.out.println("鼠标弹起: " + e.getButton());
-        if (nativeMouseInputListener != null) {
-            nativeMouseInputListener.nativeMouseReleased(e);
+        if (isLog) {
+            System.out.println("鼠标弹起: " + e.getButton());
+        }
+        if (nativeMouseListener != null) {
+            nativeMouseListener.nativeMouseReleased(e);
         }
     }
 
     public void nativeMouseMoved(NativeMouseEvent e) {
-        System.out.println("鼠标移动: " + e.getX() + ", " + e.getY());
-        if (nativeMouseInputListener != null) {
-            nativeMouseInputListener.nativeMouseMoved(e);
+        if (isLog) {
+            System.out.println("鼠标移动: " + e.getX() + ", " + e.getY());
+        }
+        if (nativeMouseMotionListener != null) {
+            nativeMouseMotionListener.nativeMouseMoved(e);
         }
     }
 
     public void nativeMouseDragged(NativeMouseEvent e) {
-        System.out.println("鼠标拖动: " + e.getX() + ", " + e.getY());
-        if (nativeMouseInputListener != null) {
-            nativeMouseInputListener.nativeMouseDragged(e);
+        if (isLog) {
+            System.out.println("鼠标拖动: " + e.getX() + ", " + e.getY());
+        }
+        if (nativeMouseMotionListener != null) {
+            nativeMouseMotionListener.nativeMouseDragged(e);
         }
     }
 
@@ -102,7 +116,9 @@ public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeM
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
-        System.out.println("按键按下: " + NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()));
+        if (isLog) {
+            System.out.println("按键按下: " + NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()));
+        }
         if (nativeKeyListener != null) {
             nativeKeyListener.nativeKeyPressed(nativeKeyEvent);
         }
@@ -110,7 +126,9 @@ public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeM
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-        System.out.println("按键释放: " + NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()));
+        if (isLog) {
+            System.out.println("按键释放: " + NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()));
+        }
         if (nativeKeyListener != null) {
             nativeKeyListener.nativeKeyReleased(nativeKeyEvent);
         }
@@ -121,7 +139,9 @@ public class MouseKeyboardListenerHelper extends GlobalScreen implements NativeM
 
     @Override
     public void nativeMouseWheelMoved(NativeMouseWheelEvent nativeMouseWheelEvent) {
-        System.out.println("鼠标滚轮滑动: " + nativeMouseWheelEvent.getWheelRotation());
+        if (isLog) {
+            System.out.println("鼠标滚轮滑动: " + nativeMouseWheelEvent.getWheelRotation());
+        }
         if (nativeMouseWheelListener != null) {
             nativeMouseWheelListener.nativeMouseWheelMoved(nativeMouseWheelEvent);
         }

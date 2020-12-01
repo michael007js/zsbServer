@@ -4,6 +4,7 @@
     <root id="archive" name="zsbServer.jar">
       <element id="module-output" name="zsbServer" />
       <element id="module-output" name="api" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/lib/gson-2.8.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/src/lib/jnativehook-2.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/api/lib/spring-instrument-5.2.3.RELEASE.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/api/lib/spring-aspects-5.2.3.RELEASE.jar" path-in-jar="/" />
@@ -23,7 +24,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/api/lib/spring-beans-5.2.3.RELEASE.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/api/lib/spring-context-5.2.3.RELEASE.jar" path-in-jar="/" />
       <element id="file-copy" path="$PROJECT_DIR$/src/lib/jnativehook-2.1.0.jar" />
-      <element id="library" level="project" name="Spring-5.2.3.RELEASE" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/lib/gson-2.8.5.jar" />
     </root>
   </artifact>
 </component>
