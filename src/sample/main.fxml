@@ -27,7 +27,7 @@
                         <Label fx:id="lable_point" layoutX="14.0" layoutY="57.0" text="x:0,y:0" />
                         <CheckBox fx:id="cb_auto_calculation_time" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" selected="true" text="自动计算列表动作循环间隔时间(秒)" />
                         <Label fx:id="lable_current_action" layoutX="14.0" layoutY="529.0" text="当前动作"  />
-                      
+
                      </children>
                   </AnchorPane>
                </children></AnchorPane>

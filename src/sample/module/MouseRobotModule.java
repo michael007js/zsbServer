@@ -8,6 +8,7 @@ import io.reactivex.schedulers.Schedulers;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.ListView;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
@@ -21,7 +22,7 @@ import sample.utils.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("all")
@@ -43,6 +44,71 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
         }
     }
 
+    @Override
+    public void initialize(MainController mainController) {
+        this.controller = mainController;
+        change();
+        controller.getBtn_register_start_hot_key().setOnAction(this::handle);
+        controller.getBtn_start().setOnAction(this::handle);
+        controller.getBtn_load().setOnAction(this::handle);
+        controller.getBtn_save().setOnAction(this::handle);
+        controller.getBtn_clear().setOnAction(this::handle);
+        robotAdapter = new MouseRobotListAdapter();
+        robotAdapter.setOnMouseRobotListAdapterCallBack(new MouseRobotListAdapter.OnMouseRobotListAdapterCallBack() {
+            @Override
+            public void onDelete(MouseRobotBean item, int position, MouseRobotListAdapter adapter, ListView<MouseRobotBean> listView) {
+                if (item.child.size() > 0 ? AlertUtils.showConfirm("警告", "该动作包含子节点动作", "是否要删除该动作？子节点将一并删除") : AlertUtils.showConfirm("警告", "删除", "是否要删除该动作？")) {
+                    adapter.list.remove(position);
+                    adapter.refreshData(adapter.list);
+                    if (item.level == 1) {
+                        listView.prefHeightProperty().setValue(29 * adapter.list.size() + 10);
+                    }
+                    MouseRobotModule.this.showList(true);
+                }
+            }
+
+            @Override
+            public void onTagChanged(String text, MouseRobotBean item, int position, MouseRobotListAdapter adapter) {
+                adapter.list.get(position).tag = text;
+                adapter.refreshData(adapter.list);
+            }
+
+            @Override
+            public void onActionChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter) {
+                adapter.refreshData(adapter.list);
+            }
+
+            @Override
+            public void onPointChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter) {
+                MouseRobotModule.this.showList(true);
+                adapter.refreshData(adapter.list);
+            }
+
+            @Override
+            public void onIntervalChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter, ArrayList<MouseRobotBean> list) {
+                adapter.refreshData(adapter.list);
+                MouseRobotModule.this.showList(true);
+            }
+
+            @Override
+            public ListView onCreateChildList(ArrayList<MouseRobotBean> child, MouseRobotListAdapter parentAdapter) {
+                MouseRobotListAdapter childAdapter = new MouseRobotListAdapter();
+                ListView listView = new ListView();
+                listView.prefHeightProperty().setValue(29 * child.size() + 10);
+                listView.prefWidthProperty().setValue(500);
+                childAdapter.list = child;
+                UIUtils.setData(childAdapter, listView, child);
+                childAdapter.setOnMouseRobotListAdapterCallBack(this);
+                return listView;
+            }
+
+
+        });
+    }
+
+    /**
+     * 开始运行机器人
+     */
     private void run() {
         if (!isRun) {
             isRun = true;
@@ -60,29 +126,17 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
                 change();
                 if (along % totalIntervalTime == 0) {
                     for (int i = 0; i < robotAdapter.list.size(); i++) {
-                        UIUtils.setText(controller.getLable_current_action(), "正在执行:(" + (i + 1) + ")" + robotAdapter.list.get(i).tag + "(x:" + robotAdapter.list.get(i).x + "y:" + robotAdapter.list.get(i).y + "),等待" + robotAdapter.list.get(i).interval + (i < robotAdapter.list.size() - 1 ? "毫秒后开始下一个动作" : "开始下一轮循环"));
                         if (!isRun) {
                             break;
                         }
-                        robot.mouseMove(robotAdapter.list.get(i).x, robotAdapter.list.get(i).y);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.delay(20);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.mousePress(robotAdapter.list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.delay(20);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.mouseRelease(robotAdapter.list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
-                        if (!isRun) {
-                            break;
+                        taskAction(i, 0, robotAdapter.list.get(i));
+                        for (int j = 0; j < robotAdapter.list.get(i).child.size(); j++) {
+                            LogUtils.e(i, j);
+                            if (!isRun) {
+                                break;
+                            }
+                            taskAction(i, j, robotAdapter.list.get(i).child.get(j));
+                            robot.delay(robotAdapter.list.get(i).child.get(j).interval);
                         }
                         robot.delay(robotAdapter.list.get(i).interval);
                     }
@@ -109,23 +163,24 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
                 }), Schedulers.io(), disposableObserver);
     }
 
-    @Override
-    public void initialize(MainController mainController) {
-        this.controller = mainController;
-        change();
-        controller.getBtn_register_start_hot_key().setOnAction(this::handle);
-        controller.getBtn_start().setOnAction(this::handle);
-        controller.getBtn_load().setOnAction(this::handle);
-        controller.getBtn_save().setOnAction(this::handle);
-        controller.getBtn_clear().setOnAction(this::handle);
-        robotAdapter = new MouseRobotListAdapter(true);
-        robotAdapter.setOnMouseRobotListAdapterCallBack(new MouseRobotListAdapter.OnMouseRobotListAdapterCallBack() {
-            @Override
-            public void showList() {
-                MouseRobotModule.this.showList();
-            }
-        });
+
+    /**
+     * 执行动作
+     */
+    private void taskAction(int i, int j, MouseRobotBean item) {
+        if (j == 0) {
+            UIUtils.setText(controller.getLable_current_action(), "正在执行主任务" + (i + 1) + ":" + item.tag + "[x:" + item.x + "y:" + item.y + "],等待" + item.interval + (i < robotAdapter.list.size() - 1 ? "毫秒后开始下一个动作" : "开始下一轮循环"));
+        } else {
+            UIUtils.setText(controller.getLable_current_action(), "正在执行主任务" + (i + 1) + "的分支任务(" + (j + 1) + ")" + item.tag + "[x:" + item.x + "y:" + item.y + "],等待" + item.interval + "毫秒后继续下一个动作");
+        }
+        robot.mouseMove(item.x, item.y);
+        robot.delay(5);
+        robot.mousePress(item.action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
+        robot.delay(5);
+        robot.mouseRelease(item.action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
+
     }
+
 
     /**
      * 计算列表中所有动作的执行时间
@@ -135,6 +190,9 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
         if (robotAdapter.list.size() > 0 && controller.getCb_auto_calculation_time().isSelected()) {
             totalIntervalTime = 0;
             for (int i = 0; i < robotAdapter.list.size(); i++) {
+                for (int j = 0; j < robotAdapter.list.get(i).child.size(); j++) {
+                    totalIntervalTime += robotAdapter.list.get(i).child.get(j).interval;
+                }
                 totalIntervalTime += robotAdapter.list.get(i).interval;
             }
             //判断列表总时长取余是否不等于0，如果是，则代表不能整除，在原有的时间上加十秒防止误差
@@ -172,9 +230,11 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
     /**
      * 显示列表
      */
-    private void showList() {
+    private void showList(boolean justCalc) {
+        if (!justCalc) {
+            UIUtils.setData(robotAdapter, controller.getLv_action(), robotAdapter.list);
+        }
         UIUtils.setText(controller.getEdit_interval(), getCalculationTime() + "");
-        UIUtils.setData(robotAdapter, controller.getLv_action(), robotAdapter.list);
     }
 
 
@@ -222,11 +282,14 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
                 robotAdapter.list = saveConfigBean.getMouse();
                 for (int i = 0; i < robotAdapter.list.size(); i++) {
                     robotAdapter.list.get(i).close = true;
+                    if (robotAdapter.list.get(i).child == null) {
+                        robotAdapter.list.get(i).child = new ArrayList<>();
+                    }
                 }
                 totalIntervalTime = saveConfigBean.getTotalInterval();
                 controller.getEdit_interval().setText(totalIntervalTime + "");
                 AlertUtils.showInfo("读取", "读取成功！");
-                showList();
+                showList(false);
             } catch (Exception e) {
                 e.printStackTrace();
                 AlertUtils.showError("读取", "读取失败！");
@@ -250,7 +313,7 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
         } else if (event.getSource() == controller.getBtn_clear()) {
             if (AlertUtils.showConfirm("清空", "警告", "确定要清空当前所有的动作吗？如果未保存将全部丢失！")) {
                 robotAdapter.list.clear();
-                showList();
+                showList(false);
             }
         }
     }
@@ -265,17 +328,14 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             }
             if ("R".equals(NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()))) {
                 Point point = MouseInfo.getPointerInfo().getLocation();
-                MouseRobotBean mouseRobotBean = new MouseRobotBean("步骤" + (robotAdapter.list.size() + 1), point.x, point.y, 1000, 1);
                 int currentSelectChildren = robotAdapter.getCurrentSelectChildren();
-                if (currentSelectChildren == robotAdapter.list.size() - 1) {
-                    mouseRobotBean.level = 0;
-                    robotAdapter.list.add(mouseRobotBean);
+                if (currentSelectChildren == -1) {
+                    robotAdapter.list.add(new MouseRobotBean("步骤" + (robotAdapter.list.size() + 1), point.x, point.y, 1000, 1, true, 0, new ArrayList()));
                 } else {
-                    mouseRobotBean.level = 1;
-                    robotAdapter.list.get(currentSelectChildren).child.add(mouseRobotBean);
+                    robotAdapter.list.get(currentSelectChildren).child.add(new MouseRobotBean("步骤" + (robotAdapter.list.get(currentSelectChildren).child.size() + 1), point.x, point.y, 1000, 1, true, 1, new ArrayList()));
                 }
 
-                showList();
+                showList(false);
             }
         } else {
             if (nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {

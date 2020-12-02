@@ -19,59 +19,24 @@ public class MouseRobotBean {
                 ", y=" + y +
                 ", interval=" + interval +
                 ", action=" + action +
+                ", close=" + close +
+                ", level=" + level +
                 '}';
     }
 
-    public MouseRobotBean(String tag, int x, int y, int interval, int action) {
+    public MouseRobotBean(String tag, int x, int y, int interval, int action, boolean close, int level, ArrayList<MouseRobotBean> child) {
         this.tag = tag;
         this.x = x;
         this.y = y;
         this.interval = interval;
         this.action = action;
+        this.close = close;
+        this.level = level;
+        this.child = child;
     }
 
+
     public boolean isSame(MouseRobotBean mouseRobotBean) {
-        if (mouseRobotBean.tag != null && tag == null) {
-            return false;
-        }
-
-        if (mouseRobotBean.tag == null && tag != null) {
-            return false;
-        }
-        if (mouseRobotBean.tag != null && !mouseRobotBean.tag.equals(tag)) {
-            return false;
-        }
-        if (mouseRobotBean.x != x) {
-            return false;
-        }
-
-        if (mouseRobotBean.y != y) {
-            return false;
-        }
-
-        if (mouseRobotBean.interval != interval) {
-            return false;
-        }
-
-        if (mouseRobotBean.action != action) {
-            return false;
-        }
-
-        if (mouseRobotBean.close != close) {
-            return false;
-        }
-
-        if (mouseRobotBean.level != level) {
-            return false;
-        }
-
-//        if (child != null) {
-//            for (int i = 0; i < child.size(); i++) {
-//                if (!child.get(i).isSame(this)) {
-//                    return false;
-//                }
-//            }
-//        }
-        return true;
+       return mouseRobotBean.toString().equals(toString());
     }
 }

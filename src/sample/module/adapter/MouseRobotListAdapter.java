@@ -16,26 +16,19 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import sample.adapter.BaseListViewAdapter;
 import sample.bean.MouseRobotBean;
-import sample.utils.AlertUtils;
-import sample.utils.LogUtils;
-import sample.utils.UIUtils;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("all")
 public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
     public ArrayList<MouseRobotBean> list = new ArrayList<>();
     private OnMouseRobotListAdapterCallBack onMouseRobotListAdapterCallBack;
-    private boolean isParent;
-
-    public MouseRobotListAdapter(boolean isParent) {
-        this.isParent = isParent;
-    }
 
     public void setOnMouseRobotListAdapterCallBack(OnMouseRobotListAdapterCallBack onMouseRobotListAdapterCallBack) {
         this.onMouseRobotListAdapterCallBack = onMouseRobotListAdapterCallBack;
     }
 
-    private int getPosition(MouseRobotBean item, ArrayList<MouseRobotBean> list) {
+    private int getPosition(MouseRobotBean item) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isSame(item)) {
                 return i;
@@ -46,21 +39,38 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
 
     @Override
     protected Node bindView(MouseRobotBean item) {
-
+        int position = getPosition(item);
         HBox hbox = new HBox(10);
         hbox.setAlignment(Pos.BASELINE_LEFT);
-        hbox.getChildren().add(createTagTextField(item, getPosition(item, list)));
-        hbox.getChildren().add(createLabel("x:"));
-        hbox.getChildren().add(createXTextField(item, getPosition(item, list)));
-        hbox.getChildren().add(createLabel("y:"));
-        hbox.getChildren().add(createYTextField(item, getPosition(item, list)));
-        hbox.getChildren().add(createActionButton(item, getPosition(item, list)));
-        hbox.getChildren().add(createIntervalTextField(item, getPosition(item, list)));
-        hbox.getChildren().add(createLabel(getPosition(item, list) < list.size() - 1 ? "毫秒后开始下一个动作" : "毫秒后开始一轮循环"));
-        if (isParent) {
-            hbox.getChildren().add(createChildrenHBox(item, getPosition(item, list)));
+
+        if (item.level == 0) {
+            hbox.getChildren().add(createChildrenOpenButton(item, position));
+            hbox.getChildren().add(createTagTextField(item, position));
+            if (!item.close && item.child.size() > 0) {
+                if (onMouseRobotListAdapterCallBack != null) {
+                    hbox.getChildren().add(onMouseRobotListAdapterCallBack.onCreateChildList(item.child, MouseRobotListAdapter.this));
+                }
+
+            }
+            hbox.getChildren().add(createLabel("x:"));
+            hbox.getChildren().add(createXTextField(item, position));
+            hbox.getChildren().add(createLabel("y:"));
+            hbox.getChildren().add(createYTextField(item, position));
+            hbox.getChildren().add(createActionButton(item, position));
+            hbox.getChildren().add(createIntervalTextField(item, position));
+            hbox.getChildren().add(createDeleteButton(item, position));
+        } else {
+            hbox.getChildren().add(createTagTextField(item, position));
+            hbox.getChildren().add(createLabel("x:"));
+            hbox.getChildren().add(createXTextField(item, position));
+            hbox.getChildren().add(createLabel("y:"));
+            hbox.getChildren().add(createYTextField(item, position));
+            hbox.getChildren().add(createActionButton(item, position));
+            hbox.getChildren().add(createIntervalTextField(item, position));
+            hbox.getChildren().add(createDeleteButton(item, position));
         }
-        hbox.getChildren().add(createDeleteButton(item, getPosition(item, list)));
+
+
         return hbox;
     }
 
@@ -69,14 +79,15 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
      */
     private TextField createTagTextField(MouseRobotBean item, int position) {
         TextField textField = new TextField();
-        textField.setPrefWidth(200);
+        textField.setPrefWidth(150);
         textField.setText(item.tag);
         textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (!newValue) {
-                    list.get(position).tag = textField.getText().trim();
-                    refreshData(list);
+                    if (onMouseRobotListAdapterCallBack != null) {
+                        onMouseRobotListAdapterCallBack.onTagChanged(textField.getText().trim(), item, position, MouseRobotListAdapter.this);
+                    }
                 }
             }
         });
@@ -84,8 +95,9 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.ENTER) {
-                    list.get(position).tag = textField.getText().trim();
-                    refreshData(list);
+                    if (onMouseRobotListAdapterCallBack != null) {
+                        onMouseRobotListAdapterCallBack.onTagChanged(textField.getText().trim(), item, position, MouseRobotListAdapter.this);
+                    }
                 }
             }
         });
@@ -119,7 +131,7 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                     } catch (Exception e) {
                     } finally {
                         if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
+                            onMouseRobotListAdapterCallBack.onPointChanged(item, position, MouseRobotListAdapter.this);
                         }
                     }
                 }
@@ -134,7 +146,7 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                     } catch (Exception e) {
                     } finally {
                         if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
+                            onMouseRobotListAdapterCallBack.onPointChanged(item, position, MouseRobotListAdapter.this);
                         }
                     }
                 }
@@ -161,7 +173,7 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                     } catch (Exception e) {
                     } finally {
                         if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
+                            onMouseRobotListAdapterCallBack.onPointChanged(item, position, MouseRobotListAdapter.this);
                         }
                     }
                 }
@@ -176,7 +188,7 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                     } catch (Exception e) {
                     } finally {
                         if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
+                            onMouseRobotListAdapterCallBack.onPointChanged(item, position, MouseRobotListAdapter.this);
                         }
                     }
                 }
@@ -195,7 +207,9 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
             @Override
             public void handle(ActionEvent event) {
                 list.get(position).action = list.get(position).action == 1 ? 2 : 1;
-                refreshData(list);
+                if (onMouseRobotListAdapterCallBack != null) {
+                    onMouseRobotListAdapterCallBack.onActionChanged(item, position, MouseRobotListAdapter.this);
+                }
             }
         });
         return button;
@@ -215,11 +229,11 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                 if (!newValue) {
                     try {
                         list.get(position).interval = Integer.parseInt(textField.getText().trim());
-                        if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
-                        }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                    } finally {
+                        if (onMouseRobotListAdapterCallBack != null) {
+                            onMouseRobotListAdapterCallBack.onIntervalChanged(item, position, MouseRobotListAdapter.this, list);
+                        }
                     }
                 }
             }
@@ -230,11 +244,11 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                 if (event.getCode() == KeyCode.ENTER) {
                     try {
                         list.get(position).interval = Integer.parseInt(textField.getText().trim());
-                        if (onMouseRobotListAdapterCallBack != null) {
-                            onMouseRobotListAdapterCallBack.showList();
-                        }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                    } finally {
+                        if (onMouseRobotListAdapterCallBack != null) {
+                            onMouseRobotListAdapterCallBack.onIntervalChanged(item, position, MouseRobotListAdapter.this, list);
+                        }
                     }
                 }
             }
@@ -243,44 +257,27 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
     }
 
     /**
-     * 创建子节点动作按钮与列表
+     * 创建子节点动作按钮
      */
-    private HBox createChildrenHBox(MouseRobotBean item, int position) {
-        HBox hbox = new HBox(10);
-        hbox.setAlignment(Pos.BASELINE_LEFT);
+    private Button createChildrenOpenButton(MouseRobotBean item, int position) {
         Button button = new Button();
+        button.prefWidthProperty().setValue(25);
+        button.prefHeightProperty().setValue(25);
         button.setText(item.close ? "+" : "-");
         button.setStyle(item.child.size() == 0 ? null : "-fx-background-color: gray");
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                boolean original = item.close;
                 for (int i = 0; i < list.size(); i++) {
                     list.get(i).close = true;
                 }
-                list.get(position).close = false;
+
+                list.get(position).close = !original;
                 refreshData(list);
             }
         });
-        hbox.getChildren().add(button);
-        if (!item.close && item.child.size() > 0) {
-            hbox.getChildren().add(createChildren(item.child));
-        }
-        return hbox;
-    }
-
-
-    private ListView createChildren(ArrayList<MouseRobotBean> child) {
-        MouseRobotListAdapter childAdapter = new MouseRobotListAdapter(false);
-        ListView listView = new ListView();
-        listView.prefHeightProperty().setValue(30 * child.size());
-        UIUtils.setData(childAdapter, listView, child);
-        childAdapter.setOnMouseRobotListAdapterCallBack(new MouseRobotListAdapter.OnMouseRobotListAdapterCallBack() {
-            @Override
-            public void showList() {
-                UIUtils.setData(childAdapter, listView, childAdapter.list);
-            }
-        });
-        return listView;
+        return button;
     }
 
     /**
@@ -292,17 +289,8 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (item.level == 0) {
-                    if (AlertUtils.showConfirm("警告", "删除", "是否要删除该动作？如果有子节点动作，将一并删除")) {
-                        list.remove(position);
-                        refreshData(list);
-                    }
-                } else {
-                    if (AlertUtils.showConfirm("警告", "删除", "是否要删除该动作？")) {
-                        item.child.remove(getPosition(item, item.child));
-                        refreshData(list);
-                    }
-
+                if (onMouseRobotListAdapterCallBack != null) {
+                    onMouseRobotListAdapterCallBack.onDelete(item, position, MouseRobotListAdapter.this, listView);
                 }
             }
         });
@@ -319,12 +307,23 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
+
 
     public interface OnMouseRobotListAdapterCallBack {
 
-        void showList();
+        void onDelete(MouseRobotBean item, int position, MouseRobotListAdapter adapter, ListView<MouseRobotBean> listView);
+
+        void onTagChanged(String text, MouseRobotBean item, int position, MouseRobotListAdapter adapter);
+
+        void onActionChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter);
+
+        void onPointChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter);
+
+        void onIntervalChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter, ArrayList<MouseRobotBean> list);
+
+        ListView onCreateChildList(ArrayList<MouseRobotBean> child, MouseRobotListAdapter parentAdapter);
     }
 
 }
