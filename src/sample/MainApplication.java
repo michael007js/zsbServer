@@ -27,7 +27,7 @@ public class MainApplication extends Application {
             root = loader.load();
         } catch (IOException e) {
         }
-        Scene scene = new Scene(root, 600, 500);
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("脚本工具");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);

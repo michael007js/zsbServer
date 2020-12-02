@@ -6,41 +6,27 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseMotionListener;
 import sample.MainController;
-import sample.adapter.BaseListViewAdapter;
 import sample.bean.MouseRobotBean;
 import sample.bean.SaveConfigBean;
+import sample.module.adapter.MouseRobotListAdapter;
 import sample.utils.*;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("all")
 public class MouseRobotModule extends BaseTabModule implements EventHandler<ActionEvent>, NativeKeyListener, NativeMouseMotionListener {
-    private BaseListViewAdapter robotAdapter;
-    private ArrayList<MouseRobotBean> list = new ArrayList<>();
+    private MouseRobotListAdapter robotAdapter;
     private boolean isRecord;
     private MainController controller;
     private boolean isRun;
@@ -73,19 +59,12 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             public void onNext(Long along) {
                 change();
                 if (along % totalIntervalTime == 0) {
-                    for (int i = 0; i < list.size(); i++) {
+                    for (int i = 0; i < robotAdapter.list.size(); i++) {
+                        UIUtils.setText(controller.getLable_current_action(), "正在执行:(" + (i + 1) + ")" + robotAdapter.list.get(i).tag + "(x:" + robotAdapter.list.get(i).x + "y:" + robotAdapter.list.get(i).y + "),等待" + robotAdapter.list.get(i).interval + (i < robotAdapter.list.size() - 1 ? "毫秒后开始下一个动作" : "开始下一轮循环"));
                         if (!isRun) {
                             break;
                         }
-                        robot.mouseMove(list.get(i).x, list.get(i).y);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.delay(20);
-                        if (!isRun) {
-                            break;
-                        }
-                        robot.mousePress(list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
+                        robot.mouseMove(robotAdapter.list.get(i).x, robotAdapter.list.get(i).y);
                         if (!isRun) {
                             break;
                         }
@@ -93,11 +72,19 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
                         if (!isRun) {
                             break;
                         }
-                        robot.mouseRelease(list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
+                        robot.mousePress(robotAdapter.list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
                         if (!isRun) {
                             break;
                         }
-                        robot.delay(list.get(i).interval);
+                        robot.delay(20);
+                        if (!isRun) {
+                            break;
+                        }
+                        robot.mouseRelease(robotAdapter.list.get(i).action == 1 ? InputEvent.BUTTON1_MASK : InputEvent.BUTTON3_MASK);
+                        if (!isRun) {
+                            break;
+                        }
+                        robot.delay(robotAdapter.list.get(i).interval);
                     }
                 }
             }
@@ -131,6 +118,13 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
         controller.getBtn_load().setOnAction(this::handle);
         controller.getBtn_save().setOnAction(this::handle);
         controller.getBtn_clear().setOnAction(this::handle);
+        robotAdapter = new MouseRobotListAdapter(true);
+        robotAdapter.setOnMouseRobotListAdapterCallBack(new MouseRobotListAdapter.OnMouseRobotListAdapterCallBack() {
+            @Override
+            public void showList() {
+                MouseRobotModule.this.showList();
+            }
+        });
     }
 
     /**
@@ -138,10 +132,10 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
      */
     private int getCalculationTime() {
         int totalIntervalTime = getTotalIntervalTime();
-        if (list.size() > 0 && controller.getCb_auto_calculation_time().isSelected()) {
+        if (robotAdapter.list.size() > 0 && controller.getCb_auto_calculation_time().isSelected()) {
             totalIntervalTime = 0;
-            for (int i = 0; i < list.size(); i++) {
-                totalIntervalTime += list.get(i).interval;
+            for (int i = 0; i < robotAdapter.list.size(); i++) {
+                totalIntervalTime += robotAdapter.list.get(i).interval;
             }
             //判断列表总时长取余是否不等于0，如果是，则代表不能整除，在原有的时间上加十秒防止误差
             totalIntervalTime = totalIntervalTime % 1000 == 0 ? totalIntervalTime / 1000 : totalIntervalTime / 1000 + 10;
@@ -179,133 +173,10 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
      * 显示列表
      */
     private void showList() {
-        if (robotAdapter == null) {
-            robotAdapter = new BaseListViewAdapter<MouseRobotBean>(new BaseListViewAdapter.OnBaseListViewAdapterCallBacK<MouseRobotBean>() {
-                @Override
-                public Node bindView(MouseRobotBean item) {
-                    int position = 0;
-                    for (int i = 0; i < list.size(); i++) {
-                        if (list.get(i).isSame(item)) {
-                            position = i;
-                            break;
-                        }
-                    }
-                    HBox hbox = new HBox(10);
-                    hbox.setAlignment(Pos.BASELINE_LEFT);
-                    hbox.getChildren().add(createTagTextField(item, position));
-                    hbox.getChildren().add(createLabel("x:" + item.x + ",y:" + item.y));
-                    hbox.getChildren().add(createActionButton(item, position));
-                    hbox.getChildren().add(createIntervalTextField(item, position));
-                    hbox.getChildren().add(createLabel(position < list.size() - 1 ? "毫秒后开始下一个动作" : "毫秒后开始一轮循环"));
-                    return hbox;
-                }
-
-                @Override
-                public void onItemClick(MouseRobotBean item) {
-
-                }
-            });
-        }
         UIUtils.setText(controller.getEdit_interval(), getCalculationTime() + "");
-        UIUtils.setData(robotAdapter, controller.getLv_action(), list);
+        UIUtils.setData(robotAdapter, controller.getLv_action(), robotAdapter.list);
     }
 
-    /**
-     * 创建动作意图tag文本框
-     */
-    private TextField createTagTextField(MouseRobotBean item, int position) {
-        TextField textField = new TextField();
-        textField.setPrefWidth(200);
-        textField.setText(item.tag);
-        textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    list.get(position).tag = textField.getText().trim();
-                    controller.getLv_action().setItems(null);
-                    ObservableList observableList = FXCollections.observableArrayList(list);
-                    controller.getLv_action().setItems(observableList);
-                }
-            }
-        });
-        textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.ENTER) {
-                    list.get(position).tag = textField.getText().trim();
-                    controller.getLv_action().setItems(null);
-                    ObservableList observableList = FXCollections.observableArrayList(list);
-                    controller.getLv_action().setItems(observableList);
-                }
-            }
-        });
-        return textField;
-    }
-
-    /**
-     * 创建标签
-     */
-    private Label createLabel(String name) {
-        Label label = new Label();
-        label.setPadding(new Insets(0, 5, 0, 5));
-        label.setText(name);
-        return label;
-    }
-
-    /**
-     * 创建动作意图切换按钮
-     */
-    private Button createActionButton(MouseRobotBean item, int position) {
-        Button button = new Button();
-        button.setText(item.action == 1 ? "左键" : "右键");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                list.get(position).action = list.get(position).action == 1 ? 2 : 1;
-                controller.getLv_action().setItems(null);
-                ObservableList observableList = FXCollections.observableArrayList(list);
-                controller.getLv_action().setItems(observableList);
-            }
-        });
-        return button;
-    }
-
-    /**
-     * 创建动作意图执行完等待时间文本框
-     */
-    private TextField createIntervalTextField(MouseRobotBean item, int position) {
-        TextField textField = new TextField();
-        textField.setPrefWidth(50);
-        textField.setText(item.interval + "");
-
-        textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    try {
-                        list.get(position).interval = Integer.parseInt(textField.getText().trim());
-                        showList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.ENTER) {
-                    try {
-                        list.get(position).interval = Integer.parseInt(textField.getText().trim());
-                        showList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        return textField;
-    }
 
     @Override
     public void handle(ActionEvent event) {
@@ -330,8 +201,8 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             mouseKeyboardListenerHelper.setNativeMouseMotionListener(this);
             mouseKeyboardListenerHelper.register(false);
             long time = 0;
-            for (int i = 0; i < list.size(); i++) {
-                time += list.get(i).interval;
+            for (int i = 0; i < robotAdapter.list.size(); i++) {
+                time += robotAdapter.list.get(i).interval;
             }
 
             totalIntervalTime = getTotalIntervalTime();
@@ -348,7 +219,10 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             }
             try {
                 SaveConfigBean saveConfigBean = JsonUtils.formatToObject(IOHelper.readString(path), SaveConfigBean.class);
-                list = saveConfigBean.getMouse();
+                robotAdapter.list = saveConfigBean.getMouse();
+                for (int i = 0; i < robotAdapter.list.size(); i++) {
+                    robotAdapter.list.get(i).close = true;
+                }
                 totalIntervalTime = saveConfigBean.getTotalInterval();
                 controller.getEdit_interval().setText(totalIntervalTime + "");
                 AlertUtils.showInfo("读取", "读取成功！");
@@ -366,7 +240,7 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             try {
                 SaveConfigBean saveConfigBean = new SaveConfigBean();
                 totalIntervalTime = getTotalIntervalTime();
-                saveConfigBean.setMouse(list);
+                saveConfigBean.setMouse(robotAdapter.list);
                 saveConfigBean.setTotalInterval(totalIntervalTime);
                 AlertUtils.showInfo("保存", IOHelper.writeString(new File(path).isFile() ? path : path + "/robot.rcfg", false, JsonUtils.formatToJsonString(saveConfigBean)) ? "保存成功！" : "保存失败！");
             } catch (Exception e) {
@@ -375,7 +249,7 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             }
         } else if (event.getSource() == controller.getBtn_clear()) {
             if (AlertUtils.showConfirm("清空", "警告", "确定要清空当前所有的动作吗？如果未保存将全部丢失！")) {
-                list.clear();
+                robotAdapter.list.clear();
                 showList();
             }
         }
@@ -391,8 +265,16 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
             }
             if ("R".equals(NativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode()))) {
                 Point point = MouseInfo.getPointerInfo().getLocation();
-                MouseRobotBean mouseRobotBean = new MouseRobotBean("步骤" + (list.size() + 1), point.x, point.y, 1000, 1);
-                list.add(mouseRobotBean);
+                MouseRobotBean mouseRobotBean = new MouseRobotBean("步骤" + (robotAdapter.list.size() + 1), point.x, point.y, 1000, 1);
+                int currentSelectChildren = robotAdapter.getCurrentSelectChildren();
+                if (currentSelectChildren == robotAdapter.list.size() - 1) {
+                    mouseRobotBean.level = 0;
+                    robotAdapter.list.add(mouseRobotBean);
+                } else {
+                    mouseRobotBean.level = 1;
+                    robotAdapter.list.get(currentSelectChildren).child.add(mouseRobotBean);
+                }
+
                 showList();
             }
         } else {
@@ -404,6 +286,7 @@ public class MouseRobotModule extends BaseTabModule implements EventHandler<Acti
                     disposableObserver = null;
                 }
                 isRun = false;
+                UIUtils.setText(controller.getLable_current_action(), "当前动作");
                 change();
                 mouseKeyboardListenerHelper.unRegister();
             }

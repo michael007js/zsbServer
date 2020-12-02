@@ -1,10 +1,15 @@
 package sample.bean;
 
+import java.util.ArrayList;
+
 public class MouseRobotBean {
     public String tag;
     public int x, y;
     public int interval;
     public int action = 1;//1左键  2右键
+    public boolean close = true;
+    public int level;
+    public ArrayList<MouseRobotBean> child = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -52,6 +57,21 @@ public class MouseRobotBean {
             return false;
         }
 
+        if (mouseRobotBean.close != close) {
+            return false;
+        }
+
+        if (mouseRobotBean.level != level) {
+            return false;
+        }
+
+//        if (child != null) {
+//            for (int i = 0; i < child.size(); i++) {
+//                if (!child.get(i).isSame(this)) {
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 }

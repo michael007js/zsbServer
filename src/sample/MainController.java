@@ -28,6 +28,9 @@ public class MainController implements Initializable {
     private Label lable_point;
 
     @FXML
+    private Label lable_current_action;
+
+    @FXML
     private ListView<?> lv_action;
 
     @FXML
@@ -70,6 +73,10 @@ public class MainController implements Initializable {
 
     public CheckBox getCb_auto_calculation_time() {
         return cb_auto_calculation_time;
+    }
+
+    public Label getLable_current_action() {
+        return lable_current_action;
     }
 
     @Override
