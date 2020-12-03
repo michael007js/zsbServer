@@ -4,11 +4,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -48,22 +46,19 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
             hbox.getChildren().add(createTagTextField(item, position));
             if (!item.close && item.child.size() > 0) {
                 if (onMouseRobotListAdapterCallBack != null) {
-                    hbox.getChildren().add(onMouseRobotListAdapterCallBack.onCreateChildList(item.child, MouseRobotListAdapter.this));
+                    hbox.getChildren().add(onMouseRobotListAdapterCallBack.onCreateChildList(item,item.child, MouseRobotListAdapter.this));
+                    hbox.getChildren().add(createCountTextField(item, position));
                 }
 
             }
-            hbox.getChildren().add(createLabel("x:"));
             hbox.getChildren().add(createXTextField(item, position));
-            hbox.getChildren().add(createLabel("y:"));
             hbox.getChildren().add(createYTextField(item, position));
             hbox.getChildren().add(createActionButton(item, position));
             hbox.getChildren().add(createIntervalTextField(item, position));
             hbox.getChildren().add(createDeleteButton(item, position));
         } else {
             hbox.getChildren().add(createTagTextField(item, position));
-            hbox.getChildren().add(createLabel("x:"));
             hbox.getChildren().add(createXTextField(item, position));
-            hbox.getChildren().add(createLabel("y:"));
             hbox.getChildren().add(createYTextField(item, position));
             hbox.getChildren().add(createActionButton(item, position));
             hbox.getChildren().add(createIntervalTextField(item, position));
@@ -74,6 +69,48 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
         return hbox;
     }
 
+
+    /**
+     * 创建循环次数文本框
+     */
+    private TextField createCountTextField(MouseRobotBean item, int position) {
+        TextField textField = new TextField();
+        textField.setPrefWidth(60);
+        textField.setText(item.count + "");
+        textField.setPromptText("循环次数");
+        textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    try {
+                        list.get(position).count = Integer.parseInt(textField.getText().trim());
+                    } catch (Exception e) {
+                    } finally {
+                        if (onMouseRobotListAdapterCallBack != null) {
+                            onMouseRobotListAdapterCallBack.onChildTaskCount(item, position, MouseRobotListAdapter.this);
+                        }
+                    }
+                }
+            }
+        });
+        textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.ENTER) {
+                    try {
+                        list.get(position).count = Integer.parseInt(textField.getText().trim());
+                    } catch (Exception e) {
+                    } finally {
+                        if (onMouseRobotListAdapterCallBack != null) {
+                            onMouseRobotListAdapterCallBack.onChildTaskCount(item, position, MouseRobotListAdapter.this);
+                        }
+                    }
+                }
+            }
+        });
+        return textField;
+    }
+
     /**
      * 创建动作意图tag文本框
      */
@@ -81,6 +118,7 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
         TextField textField = new TextField();
         textField.setPrefWidth(150);
         textField.setText(item.tag);
+        textField.setPromptText("动作名称");
         textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -105,22 +143,13 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
     }
 
     /**
-     * 创建标签
-     */
-    private Label createLabel(String name) {
-        Label label = new Label();
-        label.setPadding(new Insets(0, 2, 0, 2));
-        label.setText(name);
-        return label;
-    }
-
-    /**
      * 创建动坐标点X文本框
      */
     private TextField createXTextField(MouseRobotBean item, int position) {
         TextField textField = new TextField();
-        textField.setPrefWidth(50);
+        textField.setPrefWidth(60);
         textField.setText(item.x + "");
+        textField.setPromptText("光标X轴");
 
         textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -161,8 +190,9 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
      */
     private TextField createYTextField(MouseRobotBean item, int position) {
         TextField textField = new TextField();
-        textField.setPrefWidth(50);
+        textField.setPrefWidth(60);
         textField.setText(item.y + "");
+        textField.setPromptText("光标Y轴");
 
         textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -220,9 +250,9 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
      */
     private TextField createIntervalTextField(MouseRobotBean item, int position) {
         TextField textField = new TextField();
-        textField.setPrefWidth(50);
+        textField.setPrefWidth(60);
         textField.setText(item.interval + "");
-
+        textField.setPromptText("等待时间");
         textField.focusedProperty().asObject().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -317,13 +347,15 @@ public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
 
         void onTagChanged(String text, MouseRobotBean item, int position, MouseRobotListAdapter adapter);
 
+        void onChildTaskCount(MouseRobotBean item, int position, MouseRobotListAdapter adapter);
+
         void onActionChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter);
 
         void onPointChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter);
 
         void onIntervalChanged(MouseRobotBean item, int position, MouseRobotListAdapter adapter, ArrayList<MouseRobotBean> list);
 
-        ListView onCreateChildList(ArrayList<MouseRobotBean> child, MouseRobotListAdapter parentAdapter);
+        ListView onCreateChildList(MouseRobotBean parent, ArrayList<MouseRobotBean> child, MouseRobotListAdapter parentAdapter);
     }
 
 }

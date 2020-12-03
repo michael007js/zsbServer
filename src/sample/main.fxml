@@ -17,16 +17,18 @@
                <children>
                   <AnchorPane prefHeight="558.0" prefWidth="800.0">
                      <children>
-                        <Button fx:id="btn_register_start_hot_key" layoutX="345.0" layoutY="15.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="200.0" text="开始记录(R记录位置，ESC退出)" />
+                        <Button fx:id="btn_register_start_hot_key" layoutX="376.0" layoutY="15.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="200.0" text="开始记录(R记录位置，ESC退出)" />
                         <TextField fx:id="edit_interval" layoutX="238.0" layoutY="15.0" prefHeight="23.0" prefWidth="59.0" text="10" />
                         <Button fx:id="btn_start" layoutX="584.0" layoutY="15.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="200.0" text="开始模拟点击(ESC停止)" />
                         <ListView fx:id="lv_action" layoutX="14.0" layoutY="95.0" prefHeight="424.0" prefWidth="770.0" />
-                        <Button fx:id="btn_load" layoutX="344.0" layoutY="53.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="载入动作" />
-                        <Button fx:id="btn_save" layoutX="519.0" layoutY="53.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="保存动作" />
+                        <Button fx:id="btn_load" layoutX="376.0" layoutY="53.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="载入动作" />
+                        <Button fx:id="btn_save" layoutX="535.0" layoutY="53.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="保存动作" />
                         <Button fx:id="btn_clear" layoutX="686.0" layoutY="53.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="清空动作" />
-                        <Label fx:id="lable_point" layoutX="14.0" layoutY="57.0" text="x:0,y:0" />
+                        <Label fx:id="lable_point" layoutX="14.0" layoutY="76.0" text="x:0,y:0" />
                         <CheckBox fx:id="cb_auto_calculation_time" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" selected="true" text="自动计算列表动作循环间隔时间(秒)" />
-                        <Label fx:id="lable_current_action" layoutX="14.0" layoutY="529.0" text="当前动作"  />
+                        <Label fx:id="lable_current_action" layoutX="14.0" layoutY="529.0" text="当前动作" />
+                        <Label fx:id="lable_point1" layoutX="71.0" layoutY="54.0" text="单轮任务完成后等待时间(秒)" />
+                        <TextField fx:id="edit_wait_time" layoutX="238.0" layoutY="50.0" prefHeight="23.0" prefWidth="59.0" text="10" />
 
                      </children>
                   </AnchorPane>

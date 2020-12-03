@@ -37,6 +37,9 @@ public class MainController implements Initializable {
     private TextField edit_interval;
 
     @FXML
+    private TextField edit_wait_time;
+
+    @FXML
     private CheckBox cb_auto_calculation_time;
 
     public Button getBtn_register_start_hot_key() {
@@ -77,6 +80,10 @@ public class MainController implements Initializable {
 
     public Label getLable_current_action() {
         return lable_current_action;
+    }
+
+    public TextField getEdit_wait_time() {
+        return edit_wait_time;
     }
 
     @Override
