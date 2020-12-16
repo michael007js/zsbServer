@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
@@ -37,7 +38,17 @@
     </Tab>
     <Tab text="服务">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="btn_start_api" layoutX="14.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="启动API" />
+                  <Button fx:id="btn_stop_api" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="停止API" />
+                   <TextArea fx:id="edit_api_info" layoutX="14.0" layoutY="125.0" prefHeight="430.0" prefWidth="371.0" promptText="启动信息" />
+                   <TextArea fx:id="edit_api_error" layoutX="396.0" layoutY="125.0" prefHeight="429.0" prefWidth="390.0" promptText="错误信息" />
+                  <TextField fx:id="edit_interval" layoutX="63.0" layoutY="89.0" prefHeight="23.0" prefWidth="48.0" text="9500" />
+                  <Label fx:id="lable_point1" layoutX="14.0" layoutY="93.0" text="端口号" />
+                  <Button fx:id="btn_client" layoutX="413.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="client" />
+               </children>
+        </AnchorPane>
       </content>
     </Tab>
   </tabs>

@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sample.module.MouseRobotModule;
+import sample.module.ServerModule;
 
 import java.io.IOException;
 
@@ -38,5 +39,7 @@ public class MainApplication extends Application {
     private void initialize(Stage primaryStage) {
         MouseRobotModule mouseRobotModule = new MouseRobotModule();
         mouseRobotModule.initialize(controller);
+        ServerModule serverModule=new ServerModule();
+        serverModule.initialize(controller);
     }
 }

@@ -42,6 +42,21 @@ public class MainController implements Initializable {
     @FXML
     private CheckBox cb_auto_calculation_time;
 
+    @FXML
+    private TextArea edit_api_info;
+
+    @FXML
+    private TextArea edit_api_error;
+
+    @FXML
+    private Button btn_start_api;
+
+    @FXML
+    private Button btn_stop_api;
+
+    @FXML
+    private Button btn_client;
+
     public Button getBtn_register_start_hot_key() {
         return btn_register_start_hot_key;
     }
@@ -84,6 +99,26 @@ public class MainController implements Initializable {
 
     public TextField getEdit_wait_time() {
         return edit_wait_time;
+    }
+
+    public TextArea getEdit_api_info() {
+        return edit_api_info;
+    }
+
+    public TextArea getEdit_api_error() {
+        return edit_api_error;
+    }
+
+    public Button getBtn_start_api() {
+        return btn_start_api;
+    }
+
+    public Button getBtn_stop_api() {
+        return btn_stop_api;
+    }
+
+    public Button getBtn_client() {
+        return btn_client;
     }
 
     @Override
