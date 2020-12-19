@@ -1,4 +1,4 @@
-package sample.utils;
+package utils;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;

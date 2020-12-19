@@ -1,4 +1,4 @@
-package sample.utils;
+package utils;
 
 
 import org.jnativehook.GlobalScreen;

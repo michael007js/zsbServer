@@ -19,7 +19,7 @@ import sample.MainController;
 import sample.bean.MouseRobotBean;
 import sample.bean.SaveConfigBean;
 import sample.module.adapter.MouseRobotListAdapter;
-import sample.utils.*;
+import utils.*;
 
 import java.awt.*;
 import java.awt.event.InputEvent;

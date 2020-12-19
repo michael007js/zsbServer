@@ -1,25 +1,34 @@
 package sample.module;
 
+import io.netty.channel.ChannelHandlerContext;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
-import sample.utils.MichaelUtils;
-import sample.utils.UIUtils;
 import socket.AppConstant;
-import socket.ConnectClient;
-import socket.ConnectServer;
 import socket.OnServerCallBack;
+import socket.NettyClient;
+import socket.NettyClientHelper;
+import socket.NettyMessage;
+import socket.NettyServer;
+import utils.MichaelUtils;
+import utils.UIUtils;
 
 public class ServerModule extends BaseTabModule implements EventHandler<ActionEvent>, OnServerCallBack {
     private MainController controller;
-    private ConnectServer connectServer = new ConnectServer();
-    private ConnectClient connectClient = new ConnectClient();
+    private NettyServer server = new NettyServer(AppConstant.PORT);
+    private NettyClient client = new NettyClient(AppConstant.HOST, AppConstant.PORT);
+
+    {
+        client.init();
+    }
+
+    private NettyClientHelper helper = new NettyClientHelper(client);
 
     @Override
     public void initialize(MainController mainController) {
 
         this.controller = mainController;
-        connectServer.setOnServerCallBack(this);
+        server.setOnServerCallBack(this);
         controller.getBtn_start_api().setOnAction(this::handle);
         controller.getBtn_stop_api().setOnAction(this::handle);
         controller.getBtn_client().setOnAction(this::handle);
@@ -31,14 +40,23 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
     }
 
     @Override
-    public String onSendMessage(String receivedMsg) {
-        UIUtils.setTextAreaLog(controller.getEdit_api_info(), "收到客户消息" + receivedMsg);
-        return "来自服务端的消息" + System.currentTimeMillis();
+    public void onLog(String log) {
+        UIUtils.setTextAreaLog(controller.getEdit_api_info(), log);
     }
 
     @Override
-    public void onLog(String log) {
-        UIUtils.setTextAreaLog(controller.getEdit_api_info(), log);
+    public void onHeartBeat(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
+        UIUtils.setTextAreaLog(controller.getEdit_api_info(), "收到客户心跳" + ctx.channel().remoteAddress());
+    }
+
+    @Override
+    public void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
+        UIUtils.setTextAreaLog(controller.getEdit_api_info(), "收到客户消息" +  ctx.channel().remoteAddress());
+    }
+
+    @Override
+    public void onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
+        UIUtils.setTextAreaLog(controller.getEdit_api_info(), "向客户发送消息" +  ctx.channel().remoteAddress());
     }
 
     @Override
@@ -49,14 +67,20 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
     @Override
     public void handle(ActionEvent event) {
         if (event.getSource() == controller.getBtn_start_api()) {
-            connectServer.start();
+            server.start();
         } else if (event.getSource() == controller.getBtn_stop_api()) {
-            connectServer.stop();
+            server.close();
         } else if (event.getSource() == controller.getBtn_client()) {
-            if (!connectClient.isConnected()) {
-                connectClient.connect("127.0.0.1", AppConstant.PORT);
-            }
-            connectClient.send(System.currentTimeMillis() + "");
+            helper.connect();
+            helper.sendMessage("666");
+
+            // 添加Hook，以便程序退出时先关闭相应的线程
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    helper.stopAll();
+                }
+            });
+
         }
     }
 }

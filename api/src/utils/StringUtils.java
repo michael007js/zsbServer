@@ -1,4 +1,4 @@
-package sample.utils;
+package utils;
 
 import java.text.NumberFormat;
 import java.util.List;

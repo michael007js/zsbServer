@@ -1,4 +1,4 @@
-package sample.utils;
+package utils;
 
 import com.sun.javafx.application.PlatformImpl;
 import javafx.scene.control.*;

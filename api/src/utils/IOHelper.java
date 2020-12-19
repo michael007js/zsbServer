@@ -1,4 +1,4 @@
-package sample.utils;
+package utils;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
