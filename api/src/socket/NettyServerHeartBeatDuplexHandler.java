@@ -24,40 +24,15 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
         this.onServerCallBack = onServerCallBack;
     }
 
-    private void add(ChannelHandlerContext c) {
-        boolean exist = false;
-        for (int i = 0; i < clients.size(); i++) {
-            if (c.channel().remoteAddress().equals(c.channel().remoteAddress())) {
-                exist = true;
-                break;
-            }
-        }
-        if (!exist) {
-            LogUtils.e("SSSSSSSSSSSS");
-            clients.add(c);
-        }
-        LogUtils.e("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", clients.size(),exist, c.channel().remoteAddress());
-        if (onServerCallBack != null) {
-            onServerCallBack.onClientsChanged(clients);
-        }
-    }
-
-    private void remove(ChannelHandlerContext c) {
-        for (int i = 0; i < clients.size(); i++) {
-            if (c.channel().remoteAddress().equals(c.channel().remoteAddress())) {
-                clients.remove(i);
-                break;
-            }
-        }
-    }
-
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         LogUtils.e("连接关闭" + ctx.channel().remoteAddress());
         if (onServerCallBack != null) {
             onServerCallBack.onLog("连接关闭" + ctx.channel().remoteAddress());
         }
-        remove(ctx);
+        if (onServerCallBack != null) {
+            onServerCallBack.onClientDisconnected(ctx);
+        }
         super.channelInactive(ctx);
     }
 
@@ -67,7 +42,9 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
         if (onServerCallBack != null) {
             onServerCallBack.onLog("连接建立" + ctx.channel().remoteAddress());
         }
-        add(ctx);
+        if (onServerCallBack != null) {
+            onServerCallBack.onClientConnected(ctx);
+        }
         super.channelActive(ctx);
     }
 
@@ -88,7 +65,9 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
                 if (onServerCallBack != null) {
                     onServerCallBack.onLog("连接超时,请求关闭" + ctx.channel().remoteAddress());
                 }
-                remove(ctx);
+                if (onServerCallBack != null) {
+                    onServerCallBack.onClientDisconnected(ctx);
+                }
                 ctx.close();
             }
             // 注意事项：
@@ -107,6 +86,12 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
         LogUtils.e("异常: ", cause.getLocalizedMessage());
         if (onServerCallBack != null) {
             onServerCallBack.onError(cause);
+        }
+        if (onServerCallBack != null) {
+            onServerCallBack.onLog("连接超时,请求关闭" + ctx.channel().remoteAddress());
+        }
+        if (onServerCallBack != null) {
+            onServerCallBack.onClientDisconnected(ctx);
         }
         ctx.close();
     }

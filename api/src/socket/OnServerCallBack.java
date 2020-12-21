@@ -8,7 +8,9 @@ public interface OnServerCallBack {
 
     boolean isBroadCast();
 
-    void onClientsChanged(ArrayList<ChannelHandlerContext> clients);
+    void onClientConnected(ChannelHandlerContext client);
+
+    void onClientDisconnected(ChannelHandlerContext client);
 
     void onLog(String log);
 
@@ -16,7 +18,7 @@ public interface OnServerCallBack {
 
     void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
 
-    void onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
+    String onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
 
     void onError(Throwable e);
 }

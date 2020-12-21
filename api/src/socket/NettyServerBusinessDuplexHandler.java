@@ -27,7 +27,7 @@ public class NettyServerBusinessDuplexHandler extends ChannelDuplexHandler {
         NettyMessage bizMsg = (NettyMessage) msg; // 拆分好的消息
 
         if (bizMsg.getMessageType() == NettyMessage.MESSAGE_TYPE_HB) {
-            LogUtils.e("收到心跳  -- {}", bizMsg.toString());
+            LogUtils.e("收到心跳", bizMsg.toString());
             if (onServerCallBack != null) {
                 onServerCallBack.onHeartBeat(bizMsg, ctx);
             }
@@ -36,15 +36,15 @@ public class NettyServerBusinessDuplexHandler extends ChannelDuplexHandler {
             if (onServerCallBack != null) {
                 onServerCallBack.onReceivedMessage(bizMsg, ctx);
             }
-            LogUtils.e("收到消息  -- {}", bizMsg.toString());
+            LogUtils.e("收到消息", bizMsg.toString());
             bizProcessor.process(bizMsg);
             // 如果接收到的是请求，则需要写回响应消息
-            if (bizMsg.getFlag() == 0) {
-                bizMsg.setFlag((byte) 1);
+            if (bizMsg.getFlag() == NettyMessage.MESSAGE_FLAG_RESPONSE) {
+                bizMsg.setFlag((byte) NettyMessage.MESSAGE_FLAG_REQUEST);
                 if (onServerCallBack != null) {
-                    onServerCallBack.onSendMessage(bizMsg, ctx);
+                    bizMsg.setMessageBody(onServerCallBack.onSendMessage(bizMsg, ctx));
                 }
-                LogUtils.e("写回消息  -- {}", bizMsg.toString());
+                LogUtils.e("写回消息", bizMsg.toString());
                 ByteBuf rspMsg = Unpooled.copiedBuffer(bizMsg.composeFull());
                 ctx.writeAndFlush(rspMsg);
             }

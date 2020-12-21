@@ -1,17 +1,10 @@
 package sample.module;
 
 import io.netty.channel.ChannelHandlerContext;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
-import socket.AppConstant;
-import socket.OnServerCallBack;
-import socket.NettyClient;
-import socket.NettyClientHelper;
-import socket.NettyMessage;
-import socket.NettyServer;
+import socket.*;
 import utils.MichaelUtils;
 import utils.UIUtils;
 
@@ -19,6 +12,7 @@ import java.util.ArrayList;
 
 public class ServerModule extends BaseTabModule implements EventHandler<ActionEvent> {
     private MainController controller;
+    private ArrayList<ChannelHandlerContext> clients = new ArrayList<>();
     private NettyServer server = new NettyServer(AppConstant.PORT);
     private NettyClient client = new NettyClient(AppConstant.HOST, AppConstant.PORT);
 
@@ -44,8 +38,13 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             }
 
             @Override
-            public void onClientsChanged(ArrayList<ChannelHandlerContext> clients) {
-                UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
+            public void onClientConnected(ChannelHandlerContext client) {
+                add(client);
+            }
+
+            @Override
+            public void onClientDisconnected(ChannelHandlerContext client) {
+                remove(client);
             }
 
             @Override
@@ -64,8 +63,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             }
 
             @Override
-            public void onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
+            public String onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
                 UIUtils.setTextAreaLog(controller.getEdit_api_info(), "向客户" + ctx.channel().remoteAddress() + "发送消息:" + nettyMessage.toString());
+                return System.currentTimeMillis() + "";
             }
 
             @Override
@@ -94,6 +94,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         } else if (event.getSource() == controller.getBtn_client_connect()) {
             helper.connect();
         } else if (event.getSource() == controller.getBtn_client_disconnect()) {
+            for (int i = 0; i < clients.size(); i++) {
+                clients.get(i).channel().close();
+            }
             client.disConnect();
 //            client.close();
 //            helper.stopAll();
@@ -101,4 +104,30 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             helper.sendMessage("666");
         }
     }
+
+
+    private void add(ChannelHandlerContext c) {
+        boolean exist = false;
+        for (int i = 0; i < clients.size(); i++) {
+            if (c.channel().remoteAddress().equals(clients.get(i).channel().remoteAddress())) {
+                exist = true;
+                break;
+            }
+        }
+        if (!exist) {
+            clients.add(c);
+        }
+        UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
+    }
+
+    private void remove(ChannelHandlerContext c) {
+        for (int i = 0; i < clients.size(); i++) {
+            if (c.channel().remoteAddress().equals(clients.get(i).channel().remoteAddress())) {
+                clients.remove(i);
+                break;
+            }
+        }
+        UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
+    }
+
 }
