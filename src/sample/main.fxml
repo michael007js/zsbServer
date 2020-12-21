@@ -10,7 +10,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
     <Tab text="鼠标机器人">
       <content>
@@ -28,7 +28,7 @@
                         <Label fx:id="lable_point" layoutX="14.0" layoutY="76.0" text="x:0,y:0" />
                         <CheckBox fx:id="cb_auto_calculation_time" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" selected="true" text="自动计算列表动作循环间隔时间(秒)" />
                         <Label fx:id="lable_current_action" layoutX="14.0" layoutY="529.0" text="当前动作" />
-                        <Label fx:id="lable_point1" layoutX="71.0" layoutY="54.0" text="单轮任务完成后等待时间(秒)" />
+                        <Label layoutX="71.0" layoutY="54.0" text="单轮任务完成后等待时间(秒)" />
                         <TextField fx:id="edit_wait_time" layoutX="238.0" layoutY="50.0" prefHeight="23.0" prefWidth="59.0" text="10" />
 
                      </children>
@@ -42,11 +42,12 @@
                <children>
                   <Button fx:id="btn_start_api" layoutX="14.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="启动API" />
                   <Button fx:id="btn_stop_api" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="停止API" />
-                   <TextArea fx:id="edit_api_info" layoutX="14.0" layoutY="125.0" prefHeight="430.0" prefWidth="371.0" promptText="启动信息" />
-                   <TextArea fx:id="edit_api_error" layoutX="396.0" layoutY="125.0" prefHeight="429.0" prefWidth="390.0" promptText="错误信息" />
-                  <TextField fx:id="edit_interval" layoutX="63.0" layoutY="89.0" prefHeight="23.0" prefWidth="48.0" text="9500" />
-                  <Label fx:id="lable_point1" layoutX="14.0" layoutY="93.0" text="端口号" />
-                  <Button fx:id="btn_client" layoutX="413.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="client" />
+                   <TextArea fx:id="edit_api_info" layoutX="14.0" layoutY="125.0" prefHeight="283.0" prefWidth="772.0" promptText="启动信息" />
+                   <TextArea fx:id="edit_api_error" layoutX="14.0" layoutY="421.0" prefHeight="133.0" prefWidth="772.0" promptText="错误信息" />
+                  <Button fx:id="btn_client_connect" layoutX="413.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端连接" />
+                  <Button fx:id="btn_client_disconnect" layoutX="413.0" layoutY="55.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端断开" />
+                  <Button fx:id="btn_client_send" layoutX="544.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="发送消息" />
+                  <Label fx:id="lable_clients" layoutX="14.0" layoutY="94.0" text="实时客户数:0" />
                </children>
         </AnchorPane>
       </content>

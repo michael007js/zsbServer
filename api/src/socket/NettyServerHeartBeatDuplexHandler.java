@@ -8,6 +8,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import utils.LogUtils;
 
+import java.util.ArrayList;
+
 /**
  * <p>
  * 心跳Handler,本示例中,心跳采用Ping-Ping模式,即服务端跟客户端互相发送,接收方收到直接丢弃,无需响应.
@@ -16,9 +18,37 @@ import utils.LogUtils;
  */
 public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
     private OnServerCallBack onServerCallBack;
+    private ArrayList<ChannelHandlerContext> clients = new ArrayList<>();
 
-    public void setOnServerCallBack(OnServerCallBack onServerCallBack) {
+    public NettyServerHeartBeatDuplexHandler(OnServerCallBack onServerCallBack) {
         this.onServerCallBack = onServerCallBack;
+    }
+
+    private void add(ChannelHandlerContext c) {
+        boolean exist = false;
+        for (int i = 0; i < clients.size(); i++) {
+            if (c.channel().remoteAddress().equals(c.channel().remoteAddress())) {
+                exist = true;
+                break;
+            }
+        }
+        if (!exist) {
+            LogUtils.e("SSSSSSSSSSSS");
+            clients.add(c);
+        }
+        LogUtils.e("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", clients.size(),exist, c.channel().remoteAddress());
+        if (onServerCallBack != null) {
+            onServerCallBack.onClientsChanged(clients);
+        }
+    }
+
+    private void remove(ChannelHandlerContext c) {
+        for (int i = 0; i < clients.size(); i++) {
+            if (c.channel().remoteAddress().equals(c.channel().remoteAddress())) {
+                clients.remove(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -27,6 +57,7 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
         if (onServerCallBack != null) {
             onServerCallBack.onLog("连接关闭" + ctx.channel().remoteAddress());
         }
+        remove(ctx);
         super.channelInactive(ctx);
     }
 
@@ -36,6 +67,7 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
         if (onServerCallBack != null) {
             onServerCallBack.onLog("连接建立" + ctx.channel().remoteAddress());
         }
+        add(ctx);
         super.channelActive(ctx);
     }
 
@@ -56,6 +88,7 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
                 if (onServerCallBack != null) {
                     onServerCallBack.onLog("连接超时,请求关闭" + ctx.channel().remoteAddress());
                 }
+                remove(ctx);
                 ctx.close();
             }
             // 注意事项：

@@ -85,7 +85,7 @@ public class NettyServer {
                 public void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
                     ch.pipeline().addLast(new IdleStateHandler(60, 20, 0, TimeUnit.SECONDS));
-                    ch.pipeline().addLast(new NettyServerHeartBeatDuplexHandler());
+                    ch.pipeline().addLast(new NettyServerHeartBeatDuplexHandler(onServerCallBack));
                     ch.pipeline().addLast(new NettyMessageDecoder());
                     ch.pipeline().addLast(bizGroup, new NettyServerBusinessDuplexHandler(new ServerBusinessProcessor(),onServerCallBack));
 
@@ -119,7 +119,7 @@ public class NettyServer {
 
         if (future != null) {
             future.channel().close();
-            // future.channel().closeFuture().sync();
+//             future.channel().closeFuture().sync();
         }
 
         if (bootstrap != null) {

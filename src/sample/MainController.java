@@ -55,7 +55,16 @@ public class MainController implements Initializable {
     private Button btn_stop_api;
 
     @FXML
-    private Button btn_client;
+    private Button btn_client_connect;
+
+    @FXML
+    private Button btn_client_disconnect;
+
+    @FXML
+    private Button btn_client_send;
+
+    @FXML
+    private Label lable_clients;
 
     public Button getBtn_register_start_hot_key() {
         return btn_register_start_hot_key;
@@ -117,8 +126,20 @@ public class MainController implements Initializable {
         return btn_stop_api;
     }
 
-    public Button getBtn_client() {
-        return btn_client;
+    public Button getBtn_client_connect() {
+        return btn_client_connect;
+    }
+
+    public Button getBtn_client_disconnect() {
+        return btn_client_disconnect;
+    }
+
+    public Button getBtn_client_send() {
+        return btn_client_send;
+    }
+
+    public Label getLable_clients() {
+        return lable_clients;
     }
 
     @Override

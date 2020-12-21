@@ -50,12 +50,12 @@ public class UIUtils {
                 @Override
                 public void run() {
                     textArea.setText((StringUtils.isEmpty(textArea.getText()) ? "" : textArea.getText() + "\n") + finalContent);
-                    textArea.selectPositionCaret(textArea.getLength());
+//                    textArea.selectPositionCaret(textArea.getLength());
                 }
             });
         } else {
             textArea.setText((StringUtils.isEmpty(textArea.getText()) ? "" : textArea.getText() + "\n") + content);
-            textArea.selectPositionCaret(textArea.getLength());
+//            textArea.selectPositionCaret(textArea.getLength());
         }
     }
 

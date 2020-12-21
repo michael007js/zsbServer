@@ -3,7 +3,6 @@ package socket;
 import io.netty.channel.ChannelHandlerContext;
 
 public interface OnClientCallBack {
-    void onReceivedMessage(String message);
 
     void onLog(String log);
 

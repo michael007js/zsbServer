@@ -47,12 +47,12 @@ public final class NettyClientHelper {
 
     public void connect() {
         client.connect();
-        LogUtils.e("connectOrDisconnect", new Object[]{"断开"});
+        LogUtils.e("connectOrDisconnect", new Object[]{"连接"});
     }
 
     public void disConnect() {
         client.disConnect();
-        LogUtils.e("connectOrDisconnect", new Object[]{"连接"});
+        LogUtils.e("connectOrDisconnect", new Object[]{"断开"});
     }
 
     public void stopAll() {
