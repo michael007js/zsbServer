@@ -1,6 +1,8 @@
-package socket;
+package socket.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -13,14 +15,19 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import socket.message.NettyMessage;
+import socket.message.NettyMessageDecoder;
+import socket.callback.OnClientCallBack;
 import utils.LogUtils;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
  * NettyClient
  */
+@SuppressWarnings("ALL")
 public class NettyClient {
     private String ip;
     private int port;
@@ -48,12 +55,12 @@ public class NettyClient {
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                public void initChannel(SocketChannel ch) throws Exception {
+                public void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
                     ch.pipeline().addLast(new IdleStateHandler(60, 20, 0, TimeUnit.SECONDS));
                     ch.pipeline().addLast(new NettyClientHeartBeatDuplexHandler());
                     ch.pipeline().addLast(new NettyMessageDecoder());
-                    ch.pipeline().addLast(bizGroup, new NettyClientBusinessDuplexHandler(new ClientBusinessProcessor(),onClientCallBack));
+                    ch.pipeline().addLast(bizGroup, new NettyClientBusinessDuplexHandler(new ClientBusinessProcessor(), onClientCallBack));
                 }
             });
 
@@ -76,15 +83,20 @@ public class NettyClient {
      */
     public void connect() {
         try {
+//            if (future != null) {
+//                disConnect();
+//            }
             future = bootstrap.connect(ip, port).sync();
             if (onClientCallBack != null) {
                 onClientCallBack.onLog("成功连接到" + ip + ":" + port);
+                onClientCallBack.onConnectSuccess();
             }
             LogUtils.e("成功连接到" + ip + ":" + port);
         } catch (InterruptedException e) {
 //			logger.info("连接服务器异常", e);
             if (onClientCallBack != null) {
                 onClientCallBack.onLog("连接服务器异常" + e.getLocalizedMessage());
+                onClientCallBack.onConnectFail(e);
                 onClientCallBack.onError(e);
             }
             LogUtils.e("连接服务器异常" + e.getLocalizedMessage());
@@ -118,6 +130,45 @@ public class NettyClient {
             onClientCallBack.onLog("成功关闭");
         }
         LogUtils.e("成功关闭");
+    }
+
+
+    public void sendMessage(String message) {
+        if (future != null) {
+            NettyMessage bizMsg = new NettyMessage(message);
+            bizMsg.setLogId(newLogId());
+            LogUtils.e("发送消息  -- {}", bizMsg.toString());
+            ByteBuf buf = Unpooled.copiedBuffer(bizMsg.composeFull());
+            future.channel().writeAndFlush(buf);
+        }
+    }
+
+    /**
+     * 随机生成logId
+     *
+     * @return logId 介于[1000000,10000000]的随机奇数
+     */
+    private int newLogId() {
+        int logId = randomInt(1000000, 10000000);
+        if (logId % 2 == 0) {
+            logId -= 1;
+        }
+
+        return logId;
+    }
+
+    /**
+     * 生成介于min，max之间的随机整数
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public static int randomInt(int min, int max) {
+        Random random = new Random(System.currentTimeMillis());
+        // int x = (int) (Math.random() * max + min);
+        int s = random.nextInt(max) % (max - min + 1) + min;
+        return s;
     }
 
     public String getIp() {

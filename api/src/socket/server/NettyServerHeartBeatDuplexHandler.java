@@ -1,4 +1,4 @@
-package socket;
+package socket.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -6,9 +6,9 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import socket.message.NettyMessage;
+import socket.callback.OnServerCallBack;
 import utils.LogUtils;
-
-import java.util.ArrayList;
 
 /**
  * <p>
@@ -18,7 +18,6 @@ import java.util.ArrayList;
  */
 public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
     private OnServerCallBack onServerCallBack;
-    private ArrayList<ChannelHandlerContext> clients = new ArrayList<>();
 
     public NettyServerHeartBeatDuplexHandler(OnServerCallBack onServerCallBack) {
         this.onServerCallBack = onServerCallBack;
@@ -59,7 +58,9 @@ public class NettyServerHeartBeatDuplexHandler extends ChannelDuplexHandler {
                     onServerCallBack.onLog("尝试向目标发送心跳包" + ctx.channel().remoteAddress());
                 }
                 ByteBuf buf = Unpooled.copiedBuffer(NettyMessage.HEATBEAT_MSG.composeFull());
-                ctx.writeAndFlush(buf);
+                if (ctx.channel().isOpen()&&ctx.channel().isActive()) {
+                    ctx.writeAndFlush(buf);
+                }
             } else if (state == IdleState.READER_IDLE) { // 60s
                 LogUtils.e("连接超时,请求关闭" + ctx.channel().remoteAddress());
                 if (onServerCallBack != null) {

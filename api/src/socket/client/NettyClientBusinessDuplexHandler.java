@@ -1,9 +1,12 @@
-package socket;
+package socket.client;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import socket.AppBusinessProcessor;
+import socket.message.NettyMessage;
+import socket.callback.OnClientCallBack;
 import utils.LogUtils;
 
 /**
@@ -42,7 +45,8 @@ public class NettyClientBusinessDuplexHandler extends ChannelDuplexHandler {
             if (bizMsg.getFlag() == NettyMessage.MESSAGE_FLAG_RESPONSE) {
                 bizMsg.setFlag((byte) NettyMessage.MESSAGE_FLAG_REQUEST);
                 if (onClientCallBack != null) {
-                    bizMsg.setMessageBody(onClientCallBack.onSendMessage(bizMsg, ctx));
+                    onClientCallBack.onSendMessage(bizMsg, ctx);
+                    bizMsg.setMessageBody(bizMsg.composeFull());
                 }
                 LogUtils.e("写回消息", bizMsg.toString());
                 ByteBuf rspMsg = Unpooled.copiedBuffer(bizMsg.composeFull());

@@ -1,5 +1,7 @@
 package socket;
 
+import socket.message.NettyMessage;
+
 /**
  * <p>
  * 业务逻辑处理抽象基类,服务端跟客户端分别实现自己的处理逻辑

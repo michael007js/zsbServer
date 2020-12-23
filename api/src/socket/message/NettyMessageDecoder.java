@@ -1,10 +1,11 @@
-package socket;
+package socket.message;
 
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import socket.Constants;
 import utils.LogUtils;
 
 /**

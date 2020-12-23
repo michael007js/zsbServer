@@ -1,5 +1,6 @@
-package socket;
+package socket.message;
 
+import socket.Constants;
 import utils.ByteTransUtil;
 
 import java.io.Serializable;

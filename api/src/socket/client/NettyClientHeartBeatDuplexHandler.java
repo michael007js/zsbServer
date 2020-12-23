@@ -1,4 +1,4 @@
-package socket;
+package socket.client;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -6,6 +6,8 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import socket.message.NettyMessage;
+import socket.callback.OnClientCallBack;
 import utils.LogUtils;
 
 /**

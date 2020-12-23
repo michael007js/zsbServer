@@ -1,8 +1,7 @@
-package socket;
+package socket.callback;
 
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.ArrayList;
+import socket.message.NettyMessage;
 
 public interface OnServerCallBack {
 

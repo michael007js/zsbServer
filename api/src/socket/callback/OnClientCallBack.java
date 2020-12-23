@@ -1,8 +1,13 @@
-package socket;
+package socket.callback;
 
 import io.netty.channel.ChannelHandlerContext;
+import socket.message.NettyMessage;
 
 public interface OnClientCallBack {
+
+    void onConnectSuccess();
+
+    void onConnectFail(Throwable e);
 
     void onLog(String log);
 
@@ -10,7 +15,7 @@ public interface OnClientCallBack {
 
     void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
 
-    String onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
+    void onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx);
 
     void onError(Throwable e);
 }

@@ -1,9 +1,11 @@
-package socket;
+package socket.server;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import socket.AppBusinessProcessor;
+import socket.message.NettyMessage;
+import socket.callback.OnServerCallBack;
 import utils.LogUtils;
 
 /**
@@ -41,12 +43,14 @@ public class NettyServerBusinessDuplexHandler extends ChannelDuplexHandler {
             // 如果接收到的是请求，则需要写回响应消息
             if (bizMsg.getFlag() == NettyMessage.MESSAGE_FLAG_RESPONSE) {
                 bizMsg.setFlag((byte) NettyMessage.MESSAGE_FLAG_REQUEST);
-                if (onServerCallBack != null) {
-                    bizMsg.setMessageBody(onServerCallBack.onSendMessage(bizMsg, ctx));
+                if (ctx.channel().isOpen()&&ctx.channel().isActive()) {
+                    ctx.writeAndFlush(Unpooled.copiedBuffer(bizMsg.composeFull()));
+                    if (onServerCallBack != null) {
+                        bizMsg.setMessageBody(onServerCallBack.onSendMessage(bizMsg, ctx));
+                    }
+                    LogUtils.e("写回消息", bizMsg.toString());
                 }
-                LogUtils.e("写回消息", bizMsg.toString());
-                ByteBuf rspMsg = Unpooled.copiedBuffer(bizMsg.composeFull());
-                ctx.writeAndFlush(rspMsg);
+
             }
         }
 //		 继续传递给Pipeline下一个Handler

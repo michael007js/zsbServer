@@ -1,5 +1,7 @@
-package socket;
+package socket.client;
 
+import socket.AppBusinessProcessor;
+import socket.message.NettyMessage;
 import utils.LogUtils;
 
 /**
@@ -9,10 +11,6 @@ import utils.LogUtils;
 public class ClientBusinessProcessor extends AppBusinessProcessor {
 
     public void process(NettyMessage message) {
-        NettyClientHelper helper = NettyClientHelper.getFirst();
-        if (helper == null) {
-            return;
-        }
         LogUtils.e("客户端执行业务处理...");
 
         // TODO: biz goes here

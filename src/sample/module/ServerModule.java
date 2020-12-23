@@ -5,22 +5,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
 import socket.*;
-import utils.MichaelUtils;
+import socket.callback.OnServerCallBack;
+import socket.client.NettyClient;
+import socket.message.NettyMessage;
+import socket.server.NettyServer;
 import utils.UIUtils;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("ALL")
 public class ServerModule extends BaseTabModule implements EventHandler<ActionEvent> {
     private MainController controller;
     private ArrayList<ChannelHandlerContext> clients = new ArrayList<>();
     private NettyServer server = new NettyServer(AppConstant.PORT);
     private NettyClient client = new NettyClient(AppConstant.HOST, AppConstant.PORT);
 
-    {
-        client.init();
-    }
 
-    private NettyClientHelper helper = new NettyClientHelper(client);
+
 
     @Override
     public void initialize(MainController mainController) {
@@ -31,6 +32,7 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         controller.getBtn_client_send().setOnAction(this::handle);
         controller.getBtn_client_connect().setOnAction(this::handle);
         controller.getBtn_client_disconnect().setOnAction(this::handle);
+        client.init();
         server.setOnServerCallBack(new OnServerCallBack() {
             @Override
             public boolean isBroadCast() {
@@ -49,28 +51,28 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
 
             @Override
             public void onLog(String log) {
-                UIUtils.setTextAreaLog(controller.getEdit_api_info(), log);
+//                UIUtils.setTextAreaLog(controller.getEdit_api_info(), log);
             }
 
             @Override
             public void onHeartBeat(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
-                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "心跳:" + nettyMessage.toString());
+//                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "心跳:" + nettyMessage.toString());
             }
 
             @Override
             public void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
-                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "消息:" + nettyMessage.toString());
+//                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "消息:" + nettyMessage.toString());
             }
 
             @Override
             public String onSendMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
-                UIUtils.setTextAreaLog(controller.getEdit_api_info(), "向客户" + ctx.channel().remoteAddress() + "发送消息:" + nettyMessage.toString());
+//                UIUtils.setTextAreaLog(controller.getEdit_api_info(), "向客户" + ctx.channel().remoteAddress() + "发送消息:" + nettyMessage.toString());
                 return System.currentTimeMillis() + "";
             }
 
             @Override
             public void onError(Throwable e) {
-                UIUtils.setTextAreaLog(controller.getEdit_api_error(), e.getLocalizedMessage() + "\n" + MichaelUtils.getStackTrace(e));
+//                UIUtils.setTextAreaLog(controller.getEdit_api_error(), e.getLocalizedMessage() + "\n" + MichaelUtils.getStackTrace(e));
             }
         });
 
@@ -80,7 +82,6 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
                 server.close();
                 client.disConnect();
                 client.close();
-                helper.stopAll();
             }
         });
     }
@@ -92,16 +93,15 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         } else if (event.getSource() == controller.getBtn_stop_api()) {
             server.close();
         } else if (event.getSource() == controller.getBtn_client_connect()) {
-            helper.connect();
+            client.connect();
         } else if (event.getSource() == controller.getBtn_client_disconnect()) {
             for (int i = 0; i < clients.size(); i++) {
                 clients.get(i).channel().close();
             }
             client.disConnect();
 //            client.close();
-//            helper.stopAll();
         } else if (event.getSource() == controller.getBtn_client_send()) {
-            helper.sendMessage("666");
+            client.sendMessage("666");
         }
     }
 
@@ -129,5 +129,14 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         }
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
     }
-
+    private void removeDied() {
+        for (int i = 0; i < clients.size(); i++) {
+            if (!clients.get(i).channel().isActive()) {
+                clients.get(i).channel().close();
+                clients.remove(i);
+                break;
+            }
+        }
+        UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
+    }
 }

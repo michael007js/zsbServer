@@ -1,4 +1,4 @@
-package socket;
+package socket.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -14,6 +14,9 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import socket.AppConstant;
+import socket.message.NettyMessageDecoder;
+import socket.callback.OnServerCallBack;
 import utils.LogUtils;
 
 import java.io.IOException;
