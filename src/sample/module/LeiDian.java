@@ -103,12 +103,22 @@ public class LeiDian {
 
     /**
      * 启动模拟器
-     * 无法删除第0个，不知是何原因
      *
      * @param position 索引
      */
     public String launch(int position) {
         String command = commandPath + " launch --index " + position;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 重启模拟器
+     *
+     * @param position 索引
+     */
+    public String reboot(int position) {
+        String command = commandPath + " reboot --index " + position;
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
@@ -200,6 +210,32 @@ public class LeiDian {
     }
 
     /**
+     * 修改SIM卡序列号
+     *
+     * @param position  索引
+     * @param auto      自动获取
+     * @param simSerial auto为true时随意
+     */
+    public String modifySimSerial(int position, boolean auto, long simSerial) {
+        String command = commandPath + " modify --index " + position + " --imsi " + (auto ? "auto" : simSerial);
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 修改androidId
+     *
+     * @param position  索引
+     * @param auto      自动获取
+     * @param androidId auto为true时随意
+     */
+    public String modifyAndroidId(int position, boolean auto, long androidId) {
+        String command = commandPath + " modify --index " + position + " --imsi " + (auto ? "auto" : androidId);
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
      * 修改电话号码
      *
      * @param position 索引
@@ -222,5 +258,92 @@ public class LeiDian {
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
+
+    /**
+     * CPU使用率
+     *
+     * @param position 索引
+     * @param percent  CPU使用率 0-100
+     */
+    public String downCpu(int position, int percent) {
+        String command = commandPath + " downcpu --index " + position + " --rate " + percent;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 设置FPS
+     *
+     * @param position 索引
+     * @param fps      fps 0-60
+     */
+    public String fps(int position, int fps) {
+        String command = commandPath + " globalsetting --index " + position + " --fps " + fps;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 设置音频
+     *
+     * @param position 索引
+     * @param enable   1开器 0关闭
+     */
+    public String audio(int position, int enable) {
+        String command = commandPath + " globalsetting --index " + position + " --audio " + enable;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 设置音频
+     *
+     * @param position 索引
+     * @param enable   1开器 0关闭
+     */
+    public String fastpaly(int position, int enable) {
+        String command = commandPath + " globalsetting --index " + position + " --fastpaly " + enable;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+
+    public static final String MANUFACTURER = "ro.product.manufacturer";//厂商
+    public static final String MODEL = "ro.product.model";//型号
+    public static final String IMEI = "phone.imei";//IMEI
+    public static final String IMSI = "phone.imsi";//IMSI
+    public static final String PHONE_NUMBER = "phone.number";//手机号码
+    public static final String SIM_SERIAL = "phone.simserial";//sim卡序列号
+    public static final String ANDROID_ID = "phone.androidid";//android id
+
+    /**
+     * 获取属性
+     *
+     * @param position 索引
+     * @param type     类型
+     * @return
+     */
+    public String getProParameter(int position, String type) {
+        String command = commandPath + " getprop --index " + position + " --key \"" + type + "\"";
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 设置属性
+     *
+     * @param position 索引
+     * @param type     类型字段
+     * @param value    值
+     */
+    public String setProParameter(int position, String type, String value) {
+        if (StringUtils.isEmpty(value)) {
+            return "";
+        }
+        String command = commandPath + " setprop --index " + position + " --key \"" + type + "\" --value \"" + value + "\"";
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
 
 }

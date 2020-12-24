@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
     <Tab text="鼠标机器人">
       <content>
@@ -58,13 +58,18 @@
           <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                      <Button fx:id="btn_ld_create" layoutX="411.0" layoutY="63.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="创建模拟器" />
-                      <Button fx:id="btn_ld_remove" layoutX="678.0" layoutY="63.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="删除模拟器" />
-                  <Button fx:id="btn_ld_get_directory" layoutX="286.0" layoutY="23.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="获取安装路径" />
-                  <ChoiceBox fx:id="choice_ld_install_path" layoutX="14.0" layoutY="21.0" prefHeight="28.0" prefWidth="262.0" />
-                  <ListView fx:id="lv_ld_simulator_list" layoutX="14.0" layoutY="63.0" prefHeight="200.0" prefWidth="370.0" />
-                  <TextField fx:id="edit_ld_name" layoutX="635.0" layoutY="23.0" prefHeight="23.0" prefWidth="141.0" promptText="模拟器名称" text="刷广告专用" />
-                  <Label layoutX="411.0" layoutY="27.0" text="模拟器名称(创建或删除时将使用此字段)" />
+                      <Button fx:id="btn_ld_create" layoutX="478.0" layoutY="63.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="创建模拟器" />
+                      <Button fx:id="btn_ld_remove" layoutX="478.0" layoutY="102.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="删除模拟器" />
+                  <Button fx:id="btn_ld_get_directory" layoutX="363.0" layoutY="24.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="获取安装路径" />
+                  <ChoiceBox fx:id="choice_ld_install_path" layoutX="14.0" layoutY="21.0" prefHeight="28.0" prefWidth="331.0" />
+                  <ListView fx:id="lv_ld_simulator_list" layoutX="14.0" layoutY="63.0" prefHeight="200.0" prefWidth="447.0" />
+                  <TextField fx:id="edit_ld_name" layoutX="698.0" layoutY="23.0" prefHeight="23.0" prefWidth="88.0" promptText="模拟器名称" text="刷广告专用" />
+                  <Label layoutX="478.0" layoutY="28.0" text="模拟器名称(创建或删除时将使用此字段)" />
+                  <TextField fx:id="edit_ld_name1" layoutX="14.0" layoutY="286.0" prefHeight="23.0" prefWidth="108.0" promptText="号码" />
+                  <TextField fx:id="edit_ld_name11" layoutX="14.0" layoutY="324.0" prefHeight="23.0" prefWidth="108.0" promptText="手机厂商" />
+                  <TextField fx:id="edit_ld_name111" layoutX="14.0" layoutY="360.0" prefHeight="23.0" prefWidth="108.0" promptText="手机型号" />
+                  <TextField fx:id="edit_ld_name1111" layoutX="14.0" layoutY="399.0" prefHeight="23.0" prefWidth="108.0" promptText="IMEI" />
+                  <TextField fx:id="edit_ld_name11111" layoutX="14.0" layoutY="438.0" prefHeight="23.0" prefWidth="108.0" promptText="IMEI" />
 
                   </children>
               </AnchorPane>

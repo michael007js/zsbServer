@@ -21,7 +21,6 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     private BaseChoiceBoxAdapter installAdapter = new BaseChoiceBoxAdapter<>();
     private LdSimulatorAdapter simulatorAdapter = new LdSimulatorAdapter();
 
-
     @Override
     public void initialize(MainController mainController) {
         LeiDian.getInstance().setInstallDirectory(null);
@@ -62,7 +61,10 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             LeiDian.getInstance().removeByName(controller.getEdit_ld_name().getText());
             getSimulatorList();
         } else if (event.getSource() == controller.getBtn_ld_get_directory()) {
-            getInstallDirectory();
+            LeiDian.getInstance().fps(0,50);
+            //getInstallDirectory();
+            // LogUtils.e(LeiDian.getInstance().setProParameter(0,LeiDian.MANUFACTURER,"333"));
+            //  LogUtils.e(LeiDian.getInstance().getProParameter(0,LeiDian.MANUFACTURER));
         }
     }
 
