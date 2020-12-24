@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public abstract class BaseListViewAdapter<T> implements Callback<ListView<T>, ListCell<T>> {
     protected ListView<T> listView;
-
+    public ArrayList<T> list = new ArrayList<>();
 
     public void refreshData(ArrayList<T> list) {
         listView.setItems(null);
@@ -42,6 +42,7 @@ public abstract class BaseListViewAdapter<T> implements Callback<ListView<T>, Li
         };
     }
 
+    public abstract int getPosition(T item);
 
     protected abstract Node bindView(T item);
 

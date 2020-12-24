@@ -8,7 +8,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
@@ -16,6 +18,31 @@ import java.util.regex.Pattern;
 
 public class MichaelUtils {
 
+    public static String launchCmd(String commandStr) {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader br = null;
+        try {
+            Process p = Runtime.getRuntime().exec(commandStr);
+            br = new BufferedReader(new InputStreamReader(p.getInputStream(),Charset.forName("GBK")));
+            String line = null;
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return sb.toString();
+        } finally {
+            if (br != null){
+                try {
+                    br.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     /**
      * 调用windows本地目录程序

@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
-import socket.*;
+import socket.AppConstant;
 import socket.callback.OnServerCallBack;
 import socket.client.NettyClient;
 import socket.message.NettyMessage;
@@ -21,11 +21,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
     private NettyClient client = new NettyClient(AppConstant.HOST, AppConstant.PORT);
 
 
-
-
     @Override
     public void initialize(MainController mainController) {
-
+        LeiDian.getInstance().setInstallDirectory(null);
         this.controller = mainController;
         controller.getBtn_start_api().setOnAction(this::handle);
         controller.getBtn_stop_api().setOnAction(this::handle);
@@ -129,6 +127,7 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         }
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
     }
+
     private void removeDied() {
         for (int i = 0; i < clients.size(); i++) {
             if (!clients.get(i).channel().isActive()) {

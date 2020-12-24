@@ -19,14 +19,15 @@ import java.util.ArrayList;
 
 @SuppressWarnings("all")
 public class MouseRobotListAdapter extends BaseListViewAdapter<MouseRobotBean> {
-    public ArrayList<MouseRobotBean> list = new ArrayList<>();
+
     private OnMouseRobotListAdapterCallBack onMouseRobotListAdapterCallBack;
 
     public void setOnMouseRobotListAdapterCallBack(OnMouseRobotListAdapterCallBack onMouseRobotListAdapterCallBack) {
         this.onMouseRobotListAdapterCallBack = onMouseRobotListAdapterCallBack;
     }
 
-    private int getPosition(MouseRobotBean item) {
+    @Override
+    public int getPosition(MouseRobotBean item) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isSame(item)) {
                 return i;

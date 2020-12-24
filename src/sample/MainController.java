@@ -66,6 +66,24 @@ public class MainController implements Initializable {
     @FXML
     private Label lable_clients;
 
+    @FXML
+    private Button btn_ld_get_directory;
+
+    @FXML
+    private Button btn_ld_create;
+
+    @FXML
+    private Button btn_ld_remove;
+
+    @FXML
+    private ChoiceBox<?> choice_ld_install_path;
+
+    @FXML
+    private ListView<?> lv_ld_simulator_list;
+
+    @FXML
+    private TextField edit_ld_name;
+
     public Button getBtn_register_start_hot_key() {
         return btn_register_start_hot_key;
     }
@@ -140,6 +158,30 @@ public class MainController implements Initializable {
 
     public Label getLable_clients() {
         return lable_clients;
+    }
+
+    public Button getBtn_ld_get_directory() {
+        return btn_ld_get_directory;
+    }
+
+    public Button getBtn_ld_create() {
+        return btn_ld_create;
+    }
+
+    public Button getBtn_ld_remove() {
+        return btn_ld_remove;
+    }
+
+    public ChoiceBox<?> getChoice_ld_install_path() {
+        return choice_ld_install_path;
+    }
+
+    public ListView<?> getLv_ld_simulator_list() {
+        return lv_ld_simulator_list;
+    }
+
+    public TextField getEdit_ld_name() {
+        return edit_ld_name;
     }
 
     @Override

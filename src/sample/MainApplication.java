@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.module.LeiDianModule;
 import sample.module.MouseRobotModule;
 import sample.module.ServerModule;
 
@@ -41,5 +42,7 @@ public class MainApplication extends Application {
         mouseRobotModule.initialize(controller);
         ServerModule serverModule=new ServerModule();
         serverModule.initialize(controller);
+        LeiDianModule leiDianModule=new LeiDianModule();
+        leiDianModule.initialize(controller);
     }
 }
