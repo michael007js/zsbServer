@@ -2,16 +2,14 @@ package sample.module;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
 import sample.adapter.BaseChoiceBoxAdapter;
+import sample.bean.LeiDianSimulatorBean;
+import sample.bean.MobileBrand;
 import sample.module.adapter.LdSimulatorAdapter;
-import utils.LogUtils;
-import utils.StringUtils;
-import utils.UIUtils;
-import utils.WinRegistry;
+import utils.*;
 
 import java.util.ArrayList;
 
@@ -19,7 +17,12 @@ import java.util.ArrayList;
 public class LeiDianModule extends BaseTabModule implements EventHandler<ActionEvent> {
     private MainController controller;
     private BaseChoiceBoxAdapter installAdapter = new BaseChoiceBoxAdapter<>();
-    private LdSimulatorAdapter simulatorAdapter = new LdSimulatorAdapter();
+    private LdSimulatorAdapter simulatorAdapter = new LdSimulatorAdapter(new LdSimulatorAdapter.OnLdSimulatorAdapterCallBack() {
+        @Override
+        public void onItemClick(LeiDianSimulatorBean item) {
+            LeiDian.getInstance().launch(item.getPosition());
+        }
+    });
 
     @Override
     public void initialize(MainController mainController) {
@@ -61,10 +64,8 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             LeiDian.getInstance().removeByName(controller.getEdit_ld_name().getText());
             getSimulatorList();
         } else if (event.getSource() == controller.getBtn_ld_get_directory()) {
-            LeiDian.getInstance().fps(0,50);
             //getInstallDirectory();
-            // LogUtils.e(LeiDian.getInstance().setProParameter(0,LeiDian.MANUFACTURER,"333"));
-            //  LogUtils.e(LeiDian.getInstance().getProParameter(0,LeiDian.MANUFACTURER));
+            autoCreateLaunchInstallRunApk(true);
         }
     }
 
@@ -118,5 +119,40 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
      */
     private void getSimulatorList() {
         UIUtils.setData(simulatorAdapter, controller.getLv_ld_simulator_list(), LeiDian.getInstance().getSimulatorList());
+    }
+
+    private void autoCreateLaunchInstallRunApk(boolean deteleAll) {
+       new Thread(){
+           @Override
+           public void run() {
+               super.run();
+               ArrayList<LeiDianSimulatorBean> list = LeiDian.getInstance().getSimulatorList();
+               LeiDian.getInstance().quit(-1);
+               for (int i = 0; i < list.size(); i++) {
+                   if (deteleAll || list.get(i).getName().equals(controller.getEdit_ld_name().getText())) {
+                       LeiDian.getInstance().removeByIndex(list.get(i).getPosition());
+                   }
+               }
+               LeiDian.getInstance().add(controller.getEdit_ld_name().getText());
+               getSimulatorList();
+               LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+               MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+               LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+               LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+               LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+               LeiDian.getInstance().modifyImsi(1, true, 0);
+               LeiDian.getInstance().modifyImei(1, true, 0);
+               LeiDian.getInstance().modifySimSerial(1, true, 0);
+               LeiDian.getInstance().modifyAndroidId(1, true, 0);
+               LeiDian.getInstance().modifyMac(1, true, "");
+               LeiDian.getInstance().installApp(1, "C:/Users/Administrator/Desktop/d0f205e61a15ed8c5658c5c102107b5c_40578.apk");
+               try {
+                   sleep(20000);
+                   LeiDian.getInstance().runApp(1,"com.supercell.clashofclans.guopan");
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+           }
+       }.start();
     }
 }

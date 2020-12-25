@@ -197,6 +197,19 @@ public class LeiDian {
     }
 
     /**
+     * 修改IMEI
+     *
+     * @param position 索引
+     * @param auto     自动获取
+     * @param imei     auto为true时随意
+     */
+    public String modifyImei(int position, boolean auto, long imei) {
+        String command = commandPath + " modify --index " + position + " --imei " + (auto ? "auto" : imei);
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
      * 修改IMSI
      *
      * @param position 索引
@@ -217,7 +230,7 @@ public class LeiDian {
      * @param simSerial auto为true时随意
      */
     public String modifySimSerial(int position, boolean auto, long simSerial) {
-        String command = commandPath + " modify --index " + position + " --imsi " + (auto ? "auto" : simSerial);
+        String command = commandPath + " modify --index " + position + " --simserial " + (auto ? "auto" : simSerial);
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
@@ -236,6 +249,19 @@ public class LeiDian {
     }
 
     /**
+     * 修改mac
+     *
+     * @param position 索引
+     * @param auto     自动获取
+     * @param mac      mac auto为true时随意
+     */
+    public String modifyMac(int position, boolean auto, String mac) {
+        String command = commandPath + " modify --index " + position + " --mac " + (auto ? "auto" : mac);
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
      * 修改电话号码
      *
      * @param position 索引
@@ -243,18 +269,6 @@ public class LeiDian {
      */
     public String modifyPhoneNumber(int position, String pnumber) {
         String command = commandPath + " modify --index " + position + " --pnumber " + pnumber;
-        LogUtils.e(command);
-        return MichaelUtils.launchCmd(command);
-    }
-
-    /**
-     * 修改mac
-     *
-     * @param position 索引
-     * @param mac      mac
-     */
-    public String modifyMac(int position, String mac) {
-        String command = commandPath + " modify --index " + position + " --mac " + mac;
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
@@ -277,7 +291,7 @@ public class LeiDian {
      * @param position 索引
      * @param fps      fps 0-60
      */
-    public String fps(int position, int fps) {
+    public String globalSettingFps(int position, int fps) {
         String command = commandPath + " globalsetting --index " + position + " --fps " + fps;
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
@@ -289,7 +303,7 @@ public class LeiDian {
      * @param position 索引
      * @param enable   1开器 0关闭
      */
-    public String audio(int position, int enable) {
+    public String globalSettingAudio(int position, int enable) {
         String command = commandPath + " globalsetting --index " + position + " --audio " + enable;
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
@@ -301,8 +315,58 @@ public class LeiDian {
      * @param position 索引
      * @param enable   1开器 0关闭
      */
-    public String fastpaly(int position, int enable) {
+    public String globalSettingFastPaly(int position, int enable) {
         String command = commandPath + " globalsetting --index " + position + " --fastpaly " + enable;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 干净模式，去除广告
+     *
+     * @param position 索引
+     * @param enable   打开=1，关闭=0
+     */
+    public String globalSettingCleanMode(int position, int enable) {
+        String command = commandPath + " globalsetting --index " + position + " --cleanmode " + enable;
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 运行App
+     *
+     * @param position    索引
+     * @param packageName App包名
+     */
+    public String runApp(int position, String packageName) {
+        String command = commandPath + " runapp --index " + position + " --packagename \"" + packageName + "\"";
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 运行App
+     *
+     * @param position    索引
+     * @param packageName App包名
+     */
+    public String installApp(int position, String packageName) {
+        String command = commandPath + " installapp --index " + position + " --filename \"" + packageName + "\"";
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param position         索引
+     * @param androidFilePath  android文件地址
+     * @param computerFilePath 本地文件地址
+     * @return
+     */
+    public String push(int position, String androidFilePath, String computerFilePath) {
+        String command = commandPath + " push --index " + position + " --remote " + androidFilePath + " --local " + computerFilePath;
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
