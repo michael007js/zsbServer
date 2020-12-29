@@ -138,6 +138,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         }).map(new Function<String, ArrayList<Integer>>() {
             @Override
             public ArrayList<Integer> apply(String s) throws Exception {
+                getSimulatorList();
                 ArrayList<Integer> list = new ArrayList<>();
                 ArrayList<LeiDianSimulatorBean> simulator = LeiDian.getInstance().getSimulatorList();
                 for (int i = 0; i < simulator.size(); i++) {
@@ -151,6 +152,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         }).map(new Function<ArrayList<Integer>, String>() {
             @Override
             public String apply(ArrayList<Integer> integers) throws Exception {
+                getSimulatorList();
                 for (int i = 0; i < integers.size(); i++) {
                     LeiDian.getInstance().removeByIndex(integers.get(i));
                 }
