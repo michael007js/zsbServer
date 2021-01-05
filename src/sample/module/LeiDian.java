@@ -374,6 +374,14 @@ public class LeiDian {
         return res;
     }
 
+    public String adbTouch(int position, int x, int y) {
+        String command = commandPath + " adb --index " + position + " --command \"" + " shell input tap " + x + " " + y + "\"";
+        LogUtils.e(command);
+        String res = MichaelUtils.launchCmd(command);
+        LogUtils.e(res);
+        return res;
+    }
+
     /**
      * 上传文件
      *

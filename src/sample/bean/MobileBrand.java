@@ -64,4 +64,17 @@ public class MobileBrand {
     public void setPid(String pid) {
         this.pid = pid;
     }
+
+    @Override
+    public String toString() {
+        return "MobileBrand{" +
+                "brand='" + brand + '\'' +
+                ", title='" + title + '\'' +
+                ", price='" + price + '\'' +
+                ", score='" + score + '\'' +
+                ", voteCnt='" + voteCnt + '\'' +
+                ", url='" + url + '\'' +
+                ", pid='" + pid + '\'' +
+                '}';
+    }
 }

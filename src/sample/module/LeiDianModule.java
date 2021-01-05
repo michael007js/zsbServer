@@ -89,11 +89,11 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             }
         } else if (event.getSource() == controller.getBtn_ld_action_do()) {
             autoCreateLaunchInstallRunApk(true);
-        }else if (event.getSource() == controller.getCb_install_by_leidian()) {
+        } else if (event.getSource() == controller.getCb_install_by_leidian()) {
             controller.getCb_install_by_leidian().selectedProperty().setValue(true);
             controller.getCb_install_by_adb().selectedProperty().setValue(false);
             createAutoAction(true);
-        }else if(event.getSource() == controller.getCb_install_by_adb()) {
+        } else if (event.getSource() == controller.getCb_install_by_adb()) {
             controller.getCb_install_by_leidian().selectedProperty().setValue(false);
             controller.getCb_install_by_adb().selectedProperty().setValue(true);
             createAutoAction(false);
@@ -120,9 +120,9 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         ldActionAdapter.list.add(LeiDian.Action.MODIFY_MAC);
         ldActionAdapter.list.add(LeiDian.Action.MODIFY_PHONE_NUMBER);
 
-        if (installByLeidian){
+        if (installByLeidian) {
             ldActionAdapter.list.add(LeiDian.Action.INSTALL_APP);
-        }else {
+        } else {
             ldActionAdapter.list.add(LeiDian.Action.LAUNCH);
             ldActionAdapter.list.add(LeiDian.Action.ADB_INSTALL_APP);
         }
@@ -205,6 +205,72 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
      */
     private void getSimulatorList() {
         UIUtils.setData(simulatorAdapter, controller.getLv_ld_simulator_list(), LeiDian.getInstance().getSimulatorList());
+    }
+
+    /**
+     * 自动触摸
+     */
+    public void autoTouch() {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new DisposableObserver<Object>() {
+                    @Override
+                    public void onNext(Object s) {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    /**
+     * 自动修改
+     */
+    public void autoModify() {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+                LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+                LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+                LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+                LeiDian.getInstance().modifySimSerial(1, true, 0);
+                LeiDian.getInstance().modifyImsi(1, true, 0);
+                LeiDian.getInstance().modifyImei(1, true, 0);
+                LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+                LeiDian.getInstance().modifyMac(1, true, "");
+                LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                emitter.onNext("");
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new DisposableObserver<Object>() {
+                    @Override
+                    public void onNext(Object s) {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     /**

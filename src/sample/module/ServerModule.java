@@ -80,6 +80,10 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
                 LogUtils.e(nettyMessage.bodyToString());
                 if ("auto".equals(nettyMessage.bodyToString())) {
                     leiDianModule.autoCreateLaunchInstallRunApk(true);
+                } else if ("click".equals(nettyMessage.bodyToString())) {
+                    leiDianModule.autoTouch();
+                } else if ("modify".equals(nettyMessage.bodyToString())) {
+                    leiDianModule.autoModify();
                 }
             }
 
