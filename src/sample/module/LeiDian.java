@@ -1,8 +1,8 @@
 package sample.module;
 
 import sample.bean.LeiDianSimulatorBean;
-import utils.MichaelUtils;
 import utils.LogUtils;
+import utils.MichaelUtils;
 import utils.StringUtils;
 
 import java.io.File;
@@ -349,13 +349,29 @@ public class LeiDian {
     /**
      * 安装App
      *
-     * @param position    索引
-     * @param packageName App包名
+     * @param position         索引
+     * @param computerFilePath 本地文件地址
      */
-    public String installApp(int position, String packageName) {
-        String command = commandPath + " installapp --index " + position + " --filename \"" + packageName + "\"";
+    public String installApp(int position, String computerFilePath) {
+        String command = commandPath + " installapp --index " + position + " --filename \"" + computerFilePath + "\"";
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
+    }
+
+
+    /**
+     * 安装App
+     *
+     * @param position         索引
+     * @param computerFilePath 本地文件地址
+     * @return
+     */
+    public String adbInstallApp(int position, String computerFilePath) {
+        String command = commandPath + " adb --index " + position + " --command \"" + " install " + computerFilePath + "\"";
+        LogUtils.e(command);
+        String res = MichaelUtils.launchCmd(command);
+        LogUtils.e(res);
+        return res;
     }
 
     /**
@@ -371,7 +387,6 @@ public class LeiDian {
         LogUtils.e(command);
         return MichaelUtils.launchCmd(command);
     }
-
 
     public static final String MANUFACTURER = "ro.product.manufacturer";//厂商
     public static final String MODEL = "ro.product.model";//型号
@@ -429,7 +444,8 @@ public class LeiDian {
         MODIFY_MAC("修改MAC"),
         MODIFY_PHONE_NUMBER("修改手机号"),
         RUN_APP("运行App"),
-        INSTALL_APP("安装App");
+        INSTALL_APP("安装App"),
+        ADB_INSTALL_APP("安装App(adb方式)");
         private String name;
 
         Action(String name) {

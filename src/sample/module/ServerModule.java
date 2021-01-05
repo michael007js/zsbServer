@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
@@ -39,6 +41,12 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         controller.getBtn_client_send().setOnAction(this::handle);
         controller.getBtn_client_connect().setOnAction(this::handle);
         controller.getBtn_client_disconnect().setOnAction(this::handle);
+        controller.getEdit_ld_time_auto().textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                createAutoTask();
+            }
+        });
         client.init();
         server.setOnServerCallBack(new OnServerCallBack() {
             @Override
@@ -162,30 +170,46 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
     }
 
+    private DisposableObserver disposableObserver;
 
     /**
      * 创建自动任务
      */
     private void createAutoTask() {
-        Observable.interval(5, TimeUnit.MINUTES, Schedulers.newThread())
-                .subscribe(new DisposableObserver<Long>() {
-                    @Override
-                    public void onNext(Long aLong) {
-                        removeDied();
-                        if (clients.size() == 0) {
-                            leiDianModule.autoCreateLaunchInstallRunApk(true);
-                        }
-                    }
+        if (disposableObserver != null) {
+            if (!disposableObserver.isDisposed()) {
+                disposableObserver.dispose();
+            }
+        }
+        disposableObserver = new DisposableObserver<Long>() {
+            @Override
+            public void onNext(Long aLong) {
+                removeDied();
+                if (clients.size() == 0) {
+                    leiDianModule.autoCreateLaunchInstallRunApk(true);
+                }
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
 
-                    }
+            }
 
-                    @Override
-                    public void onComplete() {
+            @Override
+            public void onComplete() {
 
-                    }
-                });
+            }
+        };
+        int minute = 2;
+        try {
+            minute = Integer.parseInt(controller.getEdit_ld_time_auto().getText());
+            minute = Math.max(minute, 1);
+        } catch (Exception e) {
+            minute = 2;
+        } finally {
+            Observable.interval(minute, TimeUnit.MINUTES, Schedulers.newThread())
+                    .subscribe(disposableObserver);
+        }
+
     }
 }

@@ -105,6 +105,22 @@ public class MainController implements Initializable {
     @FXML
     private TextField edit_ld_path;
 
+    @FXML
+    private Button btn_ld_action_do;
+
+    @FXML
+    private TextField edit_ld_delay_adb;
+
+    @FXML
+    private CheckBox cb_install_by_leidian;
+
+    @FXML
+    private CheckBox cb_install_by_adb;
+
+    @FXML
+    private TextField edit_ld_time_auto;
+
+
     public Button getBtn_register_start_hot_key() {
         return btn_register_start_hot_key;
     }
@@ -231,6 +247,26 @@ public class MainController implements Initializable {
 
     public TextField getEdit_ld_path() {
         return edit_ld_path;
+    }
+
+    public Button getBtn_ld_action_do() {
+        return btn_ld_action_do;
+    }
+
+    public TextField getEdit_ld_delay_adb() {
+        return edit_ld_delay_adb;
+    }
+
+    public CheckBox getCb_install_by_leidian() {
+        return cb_install_by_leidian;
+    }
+
+    public CheckBox getCb_install_by_adb() {
+        return cb_install_by_adb;
+    }
+
+    public TextField getEdit_ld_time_auto() {
+        return edit_ld_time_auto;
     }
 
     @Override

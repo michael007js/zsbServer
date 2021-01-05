@@ -45,10 +45,12 @@
                       <Button fx:id="btn_stop_api" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="停止API" />
                       <TextArea fx:id="edit_api_info" layoutX="14.0" layoutY="125.0" prefHeight="283.0" prefWidth="772.0" promptText="启动信息" />
                       <TextArea fx:id="edit_api_error" layoutX="14.0" layoutY="421.0" prefHeight="133.0" prefWidth="772.0" promptText="错误信息" />
-                      <Button fx:id="btn_client_connect" layoutX="413.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端连接" />
-                      <Button fx:id="btn_client_disconnect" layoutX="413.0" layoutY="55.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端断开" />
-                      <Button fx:id="btn_client_send" layoutX="544.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="发送消息" />
+                      <Button fx:id="btn_client_connect" disable="true" layoutX="688.0" layoutY="39.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端连接" />
+                      <Button fx:id="btn_client_disconnect" disable="true" layoutX="688.0" layoutY="60.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="客户端断开" />
+                      <Button fx:id="btn_client_send" disable="true" layoutX="688.0" layoutY="16.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="发送消息" />
                       <Label fx:id="lable_clients" layoutX="14.0" layoutY="94.0" text="实时客户数:0" />
+                  <TextField fx:id="edit_ld_time_auto" layoutX="152.0" layoutY="16.0" prefHeight="23.0" prefWidth="45.0" promptText="普通安装（启动）延时" text="2" />
+                  <Label layoutX="205.0" layoutY="20.0" text="分钟没有客户端连接时启动雷电自动任务" />
                   </children>
               </AnchorPane>
           </content>
@@ -65,13 +67,17 @@
                   <ListView fx:id="lv_ld_simulator_list" layoutX="15.0" layoutY="143.0" prefHeight="405.0" prefWidth="331.0" />
                   <TextField fx:id="edit_ld_name" layoutX="247.0" layoutY="101.0" prefHeight="23.0" prefWidth="98.0" promptText="模拟器名称" text="刷广告专用" />
                   <Label layoutX="14.0" layoutY="105.0" text="模拟器名称(创建或删除时将使用此字段)" />
-                  <TextField fx:id="edit_ld_delay" layoutX="666.0" layoutY="24.0" prefHeight="23.0" prefWidth="115.0" promptText="延时" text="50000" />
+                  <TextField fx:id="edit_ld_delay" layoutX="666.0" layoutY="24.0" prefHeight="23.0" prefWidth="115.0" promptText="普通安装（启动）延时" text="50000" />
                   <ListView fx:id="lv_ld_simulator_action" layoutX="362.0" layoutY="68.0" prefHeight="479.0" prefWidth="290.0" />
                   <ChoiceBox fx:id="choice_action" layoutX="362.0" layoutY="21.0" prefHeight="28.0" prefWidth="290.0" />
                   <Button fx:id="btn_ld_action_add" layoutX="673.0" layoutY="505.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="添加动作" />
                   <Button fx:id="btn_ld_action_delete" layoutX="673.0" layoutY="464.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="删除动作" />
-                  <TextField fx:id="edit_ld_package" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="包名" text="com.sss.michael" />
-                  <TextField fx:id="edit_ld_path" layoutX="666.0" layoutY="101.0" prefHeight="23.0" prefWidth="115.0" promptText="路径（含文件名）" text="C:/Users/Administrator/Desktop/ZSHY无限重启视频.apk" />
+                  <TextField fx:id="edit_ld_package" layoutX="666.0" layoutY="143.0" prefHeight="23.0" prefWidth="115.0" promptText="包名" text="com.sss.michael" />
+                  <TextField fx:id="edit_ld_path" layoutX="666.0" layoutY="101.0" prefHeight="23.0" prefWidth="115.0" promptText="路径（含文件名）" text="C:/Users/Administrator/Desktop/ZSHY_AD.APK" />
+                  <Button fx:id="btn_ld_action_do" layoutX="673.0" layoutY="421.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="执行任务" />
+                  <TextField fx:id="edit_ld_delay_adb" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="ADB安装（启动）延时" text="2000" />
+                  <CheckBox fx:id="cb_install_by_adb" layoutX="666.0" layoutY="186.0" mnemonicParsing="false" text="adb安装" />
+                  <CheckBox fx:id="cb_install_by_leidian" layoutX="666.0" layoutY="217.0" mnemonicParsing="false" selected="true" text="雷电控制台安装" />
 
                   </children>
               </AnchorPane>
