@@ -252,6 +252,8 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
                 LeiDian.getInstance().modifyMac(1, true, "");
                 LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
                 emitter.onNext("");
                 emitter.onComplete();
             }

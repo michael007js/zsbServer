@@ -346,6 +346,19 @@ public class LeiDian {
         return MichaelUtils.launchCmd(command);
     }
 
+
+    /**
+     * 运行App
+     *
+     * @param position    索引
+     * @param packageName App包名
+     */
+    public String killApp(int position, String packageName) {
+        String command = commandPath + " killapp --index " + position + " --packagename \"" + packageName + "\"";
+        LogUtils.e(command);
+        return MichaelUtils.launchCmd(command);
+    }
+
     /**
      * 安装App
      *
