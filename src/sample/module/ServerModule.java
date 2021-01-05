@@ -1,6 +1,9 @@
 package sample.module;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.reactivex.Observable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import sample.MainController;
@@ -9,9 +12,11 @@ import socket.callback.OnServerCallBack;
 import socket.client.NettyClient;
 import socket.message.NettyMessage;
 import socket.server.NettyServer;
+import utils.LogUtils;
 import utils.UIUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
 public class ServerModule extends BaseTabModule implements EventHandler<ActionEvent> {
@@ -64,7 +69,8 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             @Override
             public void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
 //                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "消息:" + nettyMessage.toString());
-                if ("auto".equals(nettyMessage.bodyToString())){
+                LogUtils.e(nettyMessage.bodyToString());
+                if ("auto".equals(nettyMessage.bodyToString())) {
                     leiDianModule.autoCreateLaunchInstallRunApk(true);
                 }
             }
@@ -80,7 +86,7 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
 //                UIUtils.setTextAreaLog(controller.getEdit_api_error(), e.getLocalizedMessage() + "\n" + MichaelUtils.getStackTrace(e));
             }
         });
-
+        server.start();
         // 添加Hook，以便程序退出时先关闭相应的线程
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -89,6 +95,7 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
                 client.close();
             }
         });
+        createAutoTask();
     }
 
     @Override
@@ -111,6 +118,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
     }
 
 
+    /**
+     * 添加链接
+     */
     private void add(ChannelHandlerContext c) {
         boolean exist = false;
         for (int i = 0; i < clients.size(); i++) {
@@ -125,6 +135,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
     }
 
+    /**
+     * 移除链接
+     */
     private void remove(ChannelHandlerContext c) {
         for (int i = 0; i < clients.size(); i++) {
             if (c.channel().remoteAddress().equals(clients.get(i).channel().remoteAddress())) {
@@ -135,6 +148,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
     }
 
+    /**
+     * 移除失效的链接
+     */
     private void removeDied() {
         for (int i = 0; i < clients.size(); i++) {
             if (!clients.get(i).channel().isActive()) {
@@ -144,5 +160,32 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             }
         }
         UIUtils.setText(controller.getLable_clients(), "实时客户数:" + clients.size());
+    }
+
+
+    /**
+     * 创建自动任务
+     */
+    private void createAutoTask() {
+        Observable.interval(5, TimeUnit.MINUTES, Schedulers.newThread())
+                .subscribe(new DisposableObserver<Long>() {
+                    @Override
+                    public void onNext(Long aLong) {
+                        removeDied();
+                        if (clients.size() == 0) {
+                            leiDianModule.autoCreateLaunchInstallRunApk(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

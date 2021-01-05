@@ -61,6 +61,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         });
 
         createActionList();
+        createAutoAction();
         getInstallDirectory();
 
     }
@@ -87,6 +88,27 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
     private ArrayList<LeiDian.Action> actions = new ArrayList<>();
+
+    /**
+     * 创建自动任务列表
+     */
+    private void createAutoAction() {
+        ldActionAdapter.list.add(LeiDian.Action.QUIT);
+        ldActionAdapter.list.add(LeiDian.Action.REMOVE);
+        ldActionAdapter.list.add(LeiDian.Action.ADD);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_DISPLAY);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_MANUFACTURER);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_MODEL);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_IMEI);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_IMSI);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_SIM_SERIAL);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_ANDROID_ID);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_MAC);
+        ldActionAdapter.list.add(LeiDian.Action.MODIFY_PHONE_NUMBER);
+        ldActionAdapter.list.add(LeiDian.Action.INSTALL_APP);
+        ldActionAdapter.list.add(LeiDian.Action.RUN_APP);
+        UIUtils.setData(ldActionAdapter, controller.getLv_ld_simulator_action(), ldActionAdapter.list);
+    }
 
     /**
      * 创建动作列表
@@ -167,6 +189,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
 
     /**
      * 全自动运行一条龙
+     *
      * @param deteleAll 删除全部模拟器
      */
     public void autoCreateLaunchInstallRunApk(boolean deteleAll) {
@@ -218,14 +241,14 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                         LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.INSTALL_APP.toString())) {
                         LeiDian.getInstance().installApp(1, StringUtils.isEmpty(controller.getEdit_ld_path().getText()) ? "C:/Users/Administrator/Desktop/ZSHY无限重启视频.apk" : controller.getEdit_ld_path().getText());
-                       int delay= 50000;
-                       try {
-                           delay= Integer.parseInt(controller.getEdit_ld_delay().getText());
-                       }catch (Exception e){
-                           delay=5000;
-                       }finally {
-                           Thread.sleep(delay);
-                       }
+                        int delay = 50000;
+                        try {
+                            delay = Integer.parseInt(controller.getEdit_ld_delay().getText());
+                        } catch (Exception e) {
+                            delay = 5000;
+                        } finally {
+                            Thread.sleep(delay);
+                        }
                     }
                     emitter.onNext(ldActionAdapter.list.get(i));
                 }
