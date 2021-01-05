@@ -84,6 +84,27 @@ public class MainController implements Initializable {
     @FXML
     private TextField edit_ld_name;
 
+    @FXML
+    private ListView<?> lv_ld_simulator_action;
+
+    @FXML
+    private ChoiceBox<?> choice_action;
+
+    @FXML
+    private Button btn_ld_action_delete;
+
+    @FXML
+    private Button btn_ld_action_add;
+
+    @FXML
+    private TextField edit_ld_delay;
+
+    @FXML
+    private TextField edit_ld_package;
+
+    @FXML
+    private TextField edit_ld_path;
+
     public Button getBtn_register_start_hot_key() {
         return btn_register_start_hot_key;
     }
@@ -182,6 +203,34 @@ public class MainController implements Initializable {
 
     public TextField getEdit_ld_name() {
         return edit_ld_name;
+    }
+
+    public ChoiceBox<?> getChoice_action() {
+        return choice_action;
+    }
+
+    public ListView<?> getLv_ld_simulator_action() {
+        return lv_ld_simulator_action;
+    }
+
+    public Button getBtn_ld_action_delete() {
+        return btn_ld_action_delete;
+    }
+
+    public Button getBtn_ld_action_add() {
+        return btn_ld_action_add;
+    }
+
+    public TextField getEdit_ld_delay() {
+        return edit_ld_delay;
+    }
+
+    public TextField getEdit_ld_package() {
+        return edit_ld_package;
+    }
+
+    public TextField getEdit_ld_path() {
+        return edit_ld_path;
     }
 
     @Override

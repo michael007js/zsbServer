@@ -40,9 +40,10 @@ public class MainApplication extends Application {
     private void initialize(Stage primaryStage) {
         MouseRobotModule mouseRobotModule = new MouseRobotModule();
         mouseRobotModule.initialize(controller);
-        ServerModule serverModule=new ServerModule();
-        serverModule.initialize(controller);
         LeiDianModule leiDianModule=new LeiDianModule();
         leiDianModule.initialize(controller);
+        ServerModule serverModule=new ServerModule();
+        serverModule.initialize(controller);
+        serverModule.setLeiDianModule(leiDianModule);
     }
 }

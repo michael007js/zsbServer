@@ -3,7 +3,6 @@ package sample.module;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import javafx.beans.value.ChangeListener;
@@ -14,22 +13,24 @@ import sample.MainController;
 import sample.adapter.BaseChoiceBoxAdapter;
 import sample.bean.LeiDianSimulatorBean;
 import sample.bean.MobileBrand;
+import sample.module.adapter.LdActionAdapter;
 import sample.module.adapter.LdSimulatorAdapter;
 import utils.*;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
 public class LeiDianModule extends BaseTabModule implements EventHandler<ActionEvent> {
     private MainController controller;
     private BaseChoiceBoxAdapter installAdapter = new BaseChoiceBoxAdapter<>();
+    private BaseChoiceBoxAdapter actionAdapter = new BaseChoiceBoxAdapter<>();
     private LdSimulatorAdapter simulatorAdapter = new LdSimulatorAdapter(new LdSimulatorAdapter.OnLdSimulatorAdapterCallBack() {
         @Override
         public void onItemClick(LeiDianSimulatorBean item) {
             LeiDian.getInstance().launch(item.getPosition());
         }
     });
+    private LdActionAdapter ldActionAdapter = new LdActionAdapter();
 
     @Override
     public void initialize(MainController mainController) {
@@ -38,6 +39,8 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         controller.getBtn_ld_create().setOnAction(this::handle);
         controller.getBtn_ld_remove().setOnAction(this::handle);
         controller.getBtn_ld_get_directory().setOnAction(this::handle);
+        controller.getBtn_ld_action_add().setOnAction(this::handle);
+        controller.getBtn_ld_action_delete().setOnAction(this::handle);
         controller.getChoice_ld_install_path().getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -57,7 +60,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             }
         });
 
-
+        createActionList();
         getInstallDirectory();
 
     }
@@ -71,9 +74,43 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             LeiDian.getInstance().removeByName(controller.getEdit_ld_name().getText());
             getSimulatorList();
         } else if (event.getSource() == controller.getBtn_ld_get_directory()) {
-            //getInstallDirectory();
-            autoCreateLaunchInstallRunApk(true);
+            getInstallDirectory();
+        } else if (event.getSource() == controller.getBtn_ld_action_add()) {
+            ldActionAdapter.list.add(actions.get(controller.getChoice_action().getSelectionModel().getSelectedIndex()));
+            UIUtils.setData(ldActionAdapter, controller.getLv_ld_simulator_action(), ldActionAdapter.list);
+        } else if (event.getSource() == controller.getBtn_ld_action_delete()) {
+            if (controller.getLv_ld_simulator_action().getSelectionModel().getSelectedIndex() > -1) {
+                ldActionAdapter.list.remove(controller.getLv_ld_simulator_action().getSelectionModel().getSelectedIndex());
+                UIUtils.setData(ldActionAdapter, controller.getLv_ld_simulator_action(), ldActionAdapter.list);
+            }
         }
+    }
+
+    private ArrayList<LeiDian.Action> actions = new ArrayList<>();
+
+    /**
+     * 创建动作列表
+     */
+    private void createActionList() {
+        actions.add(LeiDian.Action.ADD);
+        actions.add(LeiDian.Action.REMOVE);
+        actions.add(LeiDian.Action.LAUNCH);
+        actions.add(LeiDian.Action.REBOOT);
+        actions.add(LeiDian.Action.QUIT);
+        actions.add(LeiDian.Action.MODIFY_DISPLAY);
+        actions.add(LeiDian.Action.MODIFY_CPU);
+        actions.add(LeiDian.Action.MODIFY_MEMORY);
+        actions.add(LeiDian.Action.MODIFY_MANUFACTURER);
+        actions.add(LeiDian.Action.MODIFY_MODEL);
+        actions.add(LeiDian.Action.MODIFY_IMEI);
+        actions.add(LeiDian.Action.MODIFY_IMSI);
+        actions.add(LeiDian.Action.MODIFY_SIM_SERIAL);
+        actions.add(LeiDian.Action.MODIFY_ANDROID_ID);
+        actions.add(LeiDian.Action.MODIFY_MAC);
+        actions.add(LeiDian.Action.MODIFY_PHONE_NUMBER);
+        actions.add(LeiDian.Action.RUN_APP);
+        actions.add(LeiDian.Action.INSTALL_APP);
+        UIUtils.setData(actionAdapter, controller.getChoice_action(), actions, 0);
     }
 
     /**
@@ -128,67 +165,78 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         UIUtils.setData(simulatorAdapter, controller.getLv_ld_simulator_list(), LeiDian.getInstance().getSimulatorList());
     }
 
-    private void autoCreateLaunchInstallRunApk(boolean deteleAll) {
-        Observable.create(new ObservableOnSubscribe<String>() {
+    /**
+     * 全自动运行一条龙
+     * @param deteleAll 删除全部模拟器
+     */
+    public void autoCreateLaunchInstallRunApk(boolean deteleAll) {
+        Observable.create(new ObservableOnSubscribe<LeiDian.Action>() {
             @Override
-            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                LogUtils.e("退出所有模拟器");
-                emitter.onNext(LeiDian.getInstance().quit(-1));
-            }
-        }).map(new Function<String, ArrayList<Integer>>() {
-            @Override
-            public ArrayList<Integer> apply(String s) throws Exception {
-                getSimulatorList();
-                ArrayList<Integer> list = new ArrayList<>();
-                ArrayList<LeiDianSimulatorBean> simulator = LeiDian.getInstance().getSimulatorList();
-                for (int i = 0; i < simulator.size(); i++) {
-                    if (deteleAll || simulator.get(i).getName().equals(controller.getEdit_ld_name().getText())) {
-                        list.add(simulator.get(i).getPosition());
-                    }
-                }
-                LogUtils.e("统计符合条件的待移除模拟器");
-                return list;
-            }
-        }).map(new Function<ArrayList<Integer>, String>() {
-            @Override
-            public String apply(ArrayList<Integer> integers) throws Exception {
-                getSimulatorList();
-                for (int i = 0; i < integers.size(); i++) {
-                    LeiDian.getInstance().removeByIndex(integers.get(i));
-                }
-                LogUtils.e("移除指定的模拟器，size:" + integers.size());
-                LogUtils.e("添加模拟器");
-                return LeiDian.getInstance().add(controller.getEdit_ld_name().getText());
-            }
-        }).map(new Function<String, String>() {
-            @Override
-            public String apply(String s) throws Exception {
-                getSimulatorList();
-                LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
-                MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
-                LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
-                LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
-                LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
-                LeiDian.getInstance().modifyImsi(1, true, 0);
-                LeiDian.getInstance().modifyImei(1, true, 0);
-                LeiDian.getInstance().modifySimSerial(1, true, 0);
-                LeiDian.getInstance().modifyAndroidId(1, true, 0);
-                LeiDian.getInstance().modifyMac(1, true, "");
-                LogUtils.e("修改模拟器配置、安装APK");
-                return LeiDian.getInstance().installApp(1, "C:/Users/Administrator/Desktop/ZSHY无限重启视频.apk");
-            }
-        })
-                .delay(20, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(new DisposableObserver<Object>() {
-                    @Override
-                    public void onNext(Object o) {
-                        LogUtils.e("启动APK");
-                        LeiDian.getInstance().runApp(1, "com.sss.michael");
-                        onComplete();
-                        if (!isDisposed()) {
-                            dispose();
+            public void subscribe(ObservableEmitter<LeiDian.Action> emitter) throws Exception {
+                for (int i = 0; i < ldActionAdapter.list.size(); i++) {
+                    LogUtils.e("准备执行" + ldActionAdapter.list.get(i).toString());
+                    if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.ADD.toString())) {
+                        LeiDian.getInstance().add(controller.getEdit_ld_name().getText());
+                        getSimulatorList();
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.REMOVE.toString())) {
+                        ArrayList<LeiDianSimulatorBean> simulator = LeiDian.getInstance().getSimulatorList();
+                        for (int j = 0; j < simulator.size(); j++) {
+                            if (deteleAll || simulator.get(j).getName().equals(controller.getEdit_ld_name().getText())) {
+                                LeiDian.getInstance().removeByIndex(simulator.get(j).getPosition());
+                            }
                         }
+                        getSimulatorList();
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.LAUNCH.toString())) {
+                        LeiDian.getInstance().launch(1);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.REBOOT.toString())) {
+                        LeiDian.getInstance().reboot(1);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.QUIT.toString())) {
+                        LeiDian.getInstance().quit(-1);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_DISPLAY.toString())) {
+                        LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_CPU.toString())) {
+                        LeiDian.getInstance().modifyCpu(1, 4);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_MEMORY.toString())) {
+                        LeiDian.getInstance().modifyMemory(1, 3000);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_MANUFACTURER.toString()) || ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_MODEL.toString())) {
+                        MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+                        LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+                        LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_IMEI.toString())) {
+                        LeiDian.getInstance().modifyImei(1, true, 0);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_IMSI.toString())) {
+                        LeiDian.getInstance().modifyImsi(1, true, 0);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_SIM_SERIAL.toString())) {
+                        LeiDian.getInstance().modifySimSerial(1, true, 0);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_ANDROID_ID.toString())) {
+                        LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_MAC.toString())) {
+                        LeiDian.getInstance().modifyMac(1, true, "");
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_PHONE_NUMBER.toString())) {
+                        LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.RUN_APP.toString())) {
+                        LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                    } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.INSTALL_APP.toString())) {
+                        LeiDian.getInstance().installApp(1, StringUtils.isEmpty(controller.getEdit_ld_path().getText()) ? "C:/Users/Administrator/Desktop/ZSHY无限重启视频.apk" : controller.getEdit_ld_path().getText());
+                       int delay= 50000;
+                       try {
+                           delay= Integer.parseInt(controller.getEdit_ld_delay().getText());
+                       }catch (Exception e){
+                           delay=5000;
+                       }finally {
+                           Thread.sleep(delay);
+                       }
+                    }
+                    emitter.onNext(ldActionAdapter.list.get(i));
+                }
+
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new DisposableObserver<LeiDian.Action>() {
+                    @Override
+                    public void onNext(LeiDian.Action s) {
+                        LogUtils.e(s.toString() + "执行完毕");
                     }
 
                     @Override
@@ -198,8 +246,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
 
                     @Override
                     public void onComplete() {
-                        getSimulatorList();
-                        LogUtils.e("完毕");
+
                     }
                 });
 

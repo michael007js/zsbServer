@@ -1,13 +1,14 @@
 package sample.module;
 
 import sample.bean.LeiDianSimulatorBean;
-import utils.LogUtils;
 import utils.MichaelUtils;
+import utils.LogUtils;
 import utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 
+@SuppressWarnings("ALL")
 public class LeiDian {
     private static LeiDian instance;
     private String installDirectory = "E:/leidian/LDPlayer4/";
@@ -346,7 +347,7 @@ public class LeiDian {
     }
 
     /**
-     * 运行App
+     * 安装App
      *
      * @param position    索引
      * @param packageName App包名
@@ -409,5 +410,35 @@ public class LeiDian {
         return MichaelUtils.launchCmd(command);
     }
 
+    public enum Action {
+        GET_LIST("获取模拟器列表"),
+        ADD("创建模拟器"),
+        REMOVE("删除模拟器"),
+        LAUNCH("启动模拟器"),
+        REBOOT("重启模拟器"),
+        QUIT("退出模拟器"),
+        MODIFY_DISPLAY("修改分辨率"),
+        MODIFY_CPU("修改CPU"),
+        MODIFY_MEMORY("修改内存"),
+        MODIFY_MANUFACTURER("修改手机厂商"),
+        MODIFY_MODEL("修改手机型号"),
+        MODIFY_IMEI("修改IMEI"),
+        MODIFY_IMSI("修改IMSI"),
+        MODIFY_SIM_SERIAL("修改SIM卡序列号"),
+        MODIFY_ANDROID_ID("修改AndroidId"),
+        MODIFY_MAC("修改MAC"),
+        MODIFY_PHONE_NUMBER("修改手机号"),
+        RUN_APP("运行App"),
+        INSTALL_APP("安装App");
+        private String name;
 
+        Action(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 }

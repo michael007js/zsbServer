@@ -19,7 +19,11 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
     private ArrayList<ChannelHandlerContext> clients = new ArrayList<>();
     private NettyServer server = new NettyServer(AppConstant.PORT);
     private NettyClient client = new NettyClient(AppConstant.HOST, AppConstant.PORT);
+    private LeiDianModule leiDianModule;
 
+    public void setLeiDianModule(LeiDianModule leiDianModule) {
+        this.leiDianModule = leiDianModule;
+    }
 
     @Override
     public void initialize(MainController mainController) {
@@ -60,6 +64,9 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
             @Override
             public void onReceivedMessage(NettyMessage nettyMessage, ChannelHandlerContext ctx) {
 //                UIUtils.setTextAreaLog(controller.getEdit_api_info(), " 收到客户" + ctx.channel().remoteAddress() + "消息:" + nettyMessage.toString());
+                if ("auto".equals(nettyMessage.bodyToString())){
+                    leiDianModule.autoCreateLaunchInstallRunApk(true);
+                }
             }
 
             @Override
