@@ -109,7 +109,7 @@ public class MainController implements Initializable {
     private Button btn_ld_action_do;
 
     @FXML
-    private TextField edit_ld_delay_adb;
+    private TextField edit_ld_delay_click;
 
     @FXML
     private CheckBox cb_install_by_leidian;
@@ -253,8 +253,8 @@ public class MainController implements Initializable {
         return btn_ld_action_do;
     }
 
-    public TextField getEdit_ld_delay_adb() {
-        return edit_ld_delay_adb;
+    public TextField getEdit_ld_delay_click() {
+        return edit_ld_delay_click;
     }
 
     public CheckBox getCb_install_by_leidian() {

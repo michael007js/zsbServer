@@ -75,7 +75,7 @@
                   <TextField fx:id="edit_ld_package" layoutX="666.0" layoutY="143.0" prefHeight="23.0" prefWidth="115.0" promptText="包名" text="com.sss.michael" />
                   <TextField fx:id="edit_ld_path" layoutX="666.0" layoutY="101.0" prefHeight="23.0" prefWidth="115.0" promptText="路径（含文件名）" text="C:/Users/Administrator/Desktop/ZSHY_AD.APK" />
                   <Button fx:id="btn_ld_action_do" layoutX="673.0" layoutY="421.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="执行任务" />
-                  <TextField fx:id="edit_ld_delay_adb" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="ADB安装（启动）延时" text="2000" />
+                  <TextField fx:id="edit_ld_delay_click" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="自动点击延时" text="1500" />
                   <CheckBox fx:id="cb_install_by_adb" layoutX="666.0" layoutY="186.0" mnemonicParsing="false" text="adb安装" />
                   <CheckBox fx:id="cb_install_by_leidian" layoutX="666.0" layoutY="217.0" mnemonicParsing="false" selected="true" text="雷电控制台安装" />
 

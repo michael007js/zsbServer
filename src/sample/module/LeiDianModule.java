@@ -208,14 +208,41 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
     /**
-     * 自动触摸
+     * 自动执行成功任务
      */
-    public void autoTouch() {
+    public void autoSuccessTask() {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
-                emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
-                emitter.onComplete();
+                int delay = 2000;
+                try {
+                    delay = Integer.parseInt(controller.getEdit_ld_delay_click().getText());
+                } catch (Exception e) {
+                    delay = 2000;
+                } finally {
+                    MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+                    LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+                    LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+                    LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+                    LeiDian.getInstance().modifySimSerial(1, true, 0);
+                    LeiDian.getInstance().modifyImsi(1, true, 0);
+                    LeiDian.getInstance().modifyImei(1, true, 0);
+                    LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+                    LeiDian.getInstance().modifyMac(1, true, "");
+                    LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                    emitter.onNext("");
+                    emitter.onComplete();
+                    Thread.sleep(delay);
+                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 600, 40));
+                    Thread.sleep(100);
+                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
+                    Thread.sleep(1000);
+                    LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                    Thread.sleep(1000);
+                    LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+
+                    emitter.onComplete();
+                }
             }
         }).subscribeOn(Schedulers.newThread())
                 .subscribe(new DisposableObserver<Object>() {
@@ -236,9 +263,9 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
     /**
-     * 自动修改
+     * 自动执行失败任务
      */
-    public void autoModify() {
+    public void autoFailTask() {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
@@ -252,36 +279,10 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
                 LeiDian.getInstance().modifyMac(1, true, "");
                 LeiDian.getInstance().modifyAndroidId(1, true, 0);
-                emitter.onNext("");
-                emitter.onComplete();
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .subscribe(new DisposableObserver<Object>() {
-                    @Override
-                    public void onNext(Object s) {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-    /**
-     * 自动重启APP
-     */
-    public void autoRestart() {
-        Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
                 LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
                 Thread.sleep(1000);
                 LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+
                 emitter.onNext("");
                 emitter.onComplete();
             }
@@ -302,6 +303,9 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     }
                 });
     }
+
+
+
     /**
      * 全自动运行一条龙
      *
@@ -335,7 +339,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                         try {
                             delay = Integer.parseInt(controller.getEdit_ld_delay().getText());
                         } catch (Exception e) {
-                            delay = 5000;
+                            delay = 50000;
                         } finally {
                             Thread.sleep(delay);
                         }
@@ -374,20 +378,13 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                         try {
                             delay = Integer.parseInt(controller.getEdit_ld_delay().getText());
                         } catch (Exception e) {
-                            delay = 5000;
+                            delay = 50000;
                         } finally {
                             Thread.sleep(delay);
                         }
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.ADB_INSTALL_APP.toString())) {
                         LeiDian.getInstance().adbInstallApp(1, StringUtils.isEmpty(controller.getEdit_ld_path().getText()) ? "C:/Users/Administrator/Desktop/ZSHY_AD.apk" : controller.getEdit_ld_path().getText());
-                        int delay = 50000;
-                        try {
-                            delay = Integer.parseInt(controller.getEdit_ld_delay_adb().getText());
-                        } catch (Exception e) {
-                            delay = 5000;
-                        } finally {
-                            Thread.sleep(delay);
-                        }
+                        Thread.sleep(1000);
                     }
                     emitter.onNext(ldActionAdapter.list.get(i));
                 }
