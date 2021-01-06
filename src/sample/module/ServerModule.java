@@ -84,6 +84,8 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
                     leiDianModule.autoTouch();
                 } else if ("modify".equals(nettyMessage.bodyToString())) {
                     leiDianModule.autoModify();
+                }else if ("restart".equals(nettyMessage.bodyToString())) {
+                    leiDianModule.autoRestart();
                 }
             }
 

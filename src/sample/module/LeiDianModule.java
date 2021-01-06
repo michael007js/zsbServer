@@ -252,7 +252,35 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
                 LeiDian.getInstance().modifyMac(1, true, "");
                 LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                emitter.onNext("");
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new DisposableObserver<Object>() {
+                    @Override
+                    public void onNext(Object s) {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+    /**
+     * 自动重启APP
+     */
+    public void autoRestart() {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
                 LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                Thread.sleep(1000);
                 LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
                 emitter.onNext("");
                 emitter.onComplete();
@@ -274,7 +302,6 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     }
                 });
     }
-
     /**
      * 全自动运行一条龙
      *
