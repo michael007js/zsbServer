@@ -319,9 +319,14 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.REMOVE.toString())) {
                         ArrayList<LeiDianSimulatorBean> simulator = LeiDian.getInstance().getSimulatorList();
                         for (int j = 0; j < simulator.size(); j++) {
-                            if (deteleAll || simulator.get(j).getName().equals(controller.getEdit_ld_name().getText())) {
+                            if (deteleAll){
                                 LeiDian.getInstance().removeByIndex(simulator.get(j).getPosition());
+                            }else {
+                                if ( simulator.get(j).getName().contains(controller.getEdit_ld_name().getText())) {
+                                    LeiDian.getInstance().removeByIndex(simulator.get(j).getPosition());
+                                }
                             }
+
                         }
                         getSimulatorList();
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.LAUNCH.toString())) {
@@ -338,6 +343,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                         LeiDian.getInstance().reboot(1);
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.QUIT.toString())) {
                         LeiDian.getInstance().quit(-1);
+                        Thread.sleep(10000);
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_DISPLAY.toString())) {
                         LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_CPU.toString())) {
