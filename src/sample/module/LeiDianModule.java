@@ -304,14 +304,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     emitter.onNext("");
                     emitter.onComplete();
                     Thread.sleep(delay);
-                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 300, 60));
-                    Thread.sleep(100);
                     emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
-                    Thread.sleep(1000);
-                    LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
-                    Thread.sleep(1000);
-                    LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
-
                     emitter.onComplete();
                 }
             }
@@ -360,8 +353,14 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     emitter.onNext("");
                     emitter.onComplete();
                     Thread.sleep(delay);
+                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 300, 60));
+                    Thread.sleep(100);
                     emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
                     Thread.sleep(1000);
+                    LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                    Thread.sleep(1000);
+                    LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+
                     emitter.onComplete();
                 }
             }
