@@ -131,7 +131,6 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
 
-
     private DisposableObserver disposableObserver;
 
     /**
@@ -280,9 +279,9 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
     /**
-     * 自动执行成功任务
+     * 自动执行广告关闭任务
      */
-    public void autoSuccessTask() {
+    public void autoClickCloseAd() {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
@@ -305,7 +304,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     emitter.onNext("");
                     emitter.onComplete();
                     Thread.sleep(delay);
-                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 600, 40));
+                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 300, 60));
                     Thread.sleep(100);
                     emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
                     Thread.sleep(1000);
@@ -334,6 +333,56 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 });
     }
 
+
+    /**
+     * 自动执行成功任务
+     */
+    public void autoSuccessTask() {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                int delay = 2000;
+                try {
+                    delay = Integer.parseInt(controller.getEdit_ld_delay_click().getText());
+                } catch (Exception e) {
+                    delay = 2000;
+                } finally {
+                    MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+                    LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+                    LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+                    LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+                    LeiDian.getInstance().modifySimSerial(1, true, 0);
+                    LeiDian.getInstance().modifyImsi(1, true, 0);
+                    LeiDian.getInstance().modifyImei(1, true, 0);
+                    LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+                    LeiDian.getInstance().modifyMac(1, true, "");
+                    LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                    emitter.onNext("");
+                    emitter.onComplete();
+                    Thread.sleep(delay);
+                    emitter.onNext(LeiDian.getInstance().adbTouch(1, 675, 40));
+                    Thread.sleep(1000);
+                    emitter.onComplete();
+                }
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new DisposableObserver<Object>() {
+                    @Override
+                    public void onNext(Object s) {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     /**
      * 自动执行失败任务
      */
@@ -341,22 +390,29 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
-                MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
-                LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
-                LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
-                LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
-                LeiDian.getInstance().modifySimSerial(1, true, 0);
-                LeiDian.getInstance().modifyImsi(1, true, 0);
-                LeiDian.getInstance().modifyImei(1, true, 0);
-                LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
-                LeiDian.getInstance().modifyMac(1, true, "");
-                LeiDian.getInstance().modifyAndroidId(1, true, 0);
-                LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
-                Thread.sleep(1000);
-                LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
-
-                emitter.onNext("");
-                emitter.onComplete();
+                int delay = 2000;
+                try {
+                    delay = Integer.parseInt(controller.getEdit_ld_delay_click().getText());
+                } catch (Exception e) {
+                    delay = 2000;
+                } finally {
+                    Thread.sleep(delay);
+                    MobileBrand mobileBrand = MobileBrandUtils.getRandomMobileBrand();
+                    LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
+                    LeiDian.getInstance().modifyManufacturer(1, mobileBrand.getBrand());
+                    LeiDian.getInstance().modifyModel(1, mobileBrand.getTitle());
+                    LeiDian.getInstance().modifySimSerial(1, true, 0);
+                    LeiDian.getInstance().modifyImsi(1, true, 0);
+                    LeiDian.getInstance().modifyImei(1, true, 0);
+                    LeiDian.getInstance().modifyPhoneNumber(1, RandomPhoneNumber.createMobile(1));
+                    LeiDian.getInstance().modifyMac(1, true, "");
+                    LeiDian.getInstance().modifyAndroidId(1, true, 0);
+                    LeiDian.getInstance().killApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                    Thread.sleep(1000);
+                    LeiDian.getInstance().runApp(1, StringUtils.isEmpty(controller.getEdit_ld_package().getText()) ? "com.sss.michael" : controller.getEdit_ld_package().getText());
+                    emitter.onNext("");
+                    emitter.onComplete();
+                }
             }
         }).subscribeOn(Schedulers.newThread())
                 .subscribe(new DisposableObserver<Object>() {

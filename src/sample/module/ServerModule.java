@@ -85,6 +85,8 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
                     leiDianModule.autoSuccessTask();
                 } else if ("fail".equals(nettyMessage.bodyToString())) {
                     leiDianModule.autoFailTask();
+                }else if ("clickCloseAd".equals(nettyMessage.bodyToString())) {
+                    leiDianModule.autoClickCloseAd();
                 }
             }
 

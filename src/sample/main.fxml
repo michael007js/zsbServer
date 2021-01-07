@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
     <Tab text="鼠标机器人">
       <content>
@@ -75,11 +75,11 @@
                   <TextField fx:id="edit_ld_package" layoutX="666.0" layoutY="143.0" prefHeight="23.0" prefWidth="115.0" promptText="包名" text="com.sss.michael" />
                   <TextField fx:id="edit_ld_path" layoutX="666.0" layoutY="101.0" prefHeight="23.0" prefWidth="115.0" promptText="路径（含文件名）" text="C:/Users/Administrator/Desktop/ZSHY_AD.APK" />
                   <Button fx:id="btn_ld_action_do" layoutX="673.0" layoutY="421.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="98.0" text="执行任务" />
-                  <TextField fx:id="edit_ld_delay_click" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="自动点击延时" text="1500" />
+                  <TextField fx:id="edit_ld_delay_click" layoutX="666.0" layoutY="61.0" prefHeight="23.0" prefWidth="115.0" promptText="自动点击延时" text="3000" />
                   <CheckBox fx:id="cb_install_by_adb" layoutX="666.0" layoutY="186.0" mnemonicParsing="false" text="adb安装" />
                   <CheckBox fx:id="cb_install_by_leidian" layoutX="666.0" layoutY="217.0" mnemonicParsing="false" selected="true" text="雷电控制台安装" />
-                  <CheckBox fx:id="cb_hide_leidian" layoutX="666.0" layoutY="247.0" mnemonicParsing="false" selected="true" text="隐藏雷电模拟器" />
-                  <CheckBox fx:id="cb_close_leidian_force" layoutX="666.0" layoutY="278.0" mnemonicParsing="false" selected="true" text="强制结束雷电进程" />
+                  <CheckBox fx:id="cb_hide_leidian" layoutX="666.0" layoutY="247.0" mnemonicParsing="false" text="隐藏雷电模拟器" />
+                  <CheckBox fx:id="cb_close_leidian_force" layoutX="666.0" layoutY="278.0" mnemonicParsing="false" text="强制结束雷电进程" />
 
                   </children>
               </AnchorPane>
