@@ -18,6 +18,7 @@ import sample.module.adapter.LdSimulatorAdapter;
 import utils.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
 public class LeiDianModule extends BaseTabModule implements EventHandler<ActionEvent> {
@@ -44,6 +45,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         controller.getBtn_ld_action_do().setOnAction(this::handle);
         controller.getCb_install_by_leidian().setOnAction(this::handle);
         controller.getCb_install_by_adb().setOnAction(this::handle);
+        controller.getCb_hide_leidian().setOnAction(this::handle);
         controller.getChoice_ld_install_path().getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -62,7 +64,7 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 }
             }
         });
-
+        createHideLeidianWindowTask();
         createActionList();
         createAutoAction(true);
         getInstallDirectory();
@@ -97,6 +99,45 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
             controller.getCb_install_by_leidian().selectedProperty().setValue(false);
             controller.getCb_install_by_adb().selectedProperty().setValue(true);
             createAutoAction(false);
+        } else if (event.getSource() == controller.getCb_hide_leidian()) {
+            createHideLeidianWindowTask();
+        }
+    }
+
+    private DisposableObserver disposableObserver;
+
+    private void createHideLeidianWindowTask() {
+        if (controller.getCb_hide_leidian().selectedProperty().getValue().booleanValue()) {
+            if (disposableObserver != null) {
+                if (!disposableObserver.isDisposed()) {
+                    disposableObserver.dispose();
+                }
+            }
+            disposableObserver = new DisposableObserver<Long>() {
+                @Override
+                public void onNext(Long aLong) {
+                    MichaelUtils.hideOrShowWindowsProgram(controller.getEdit_ld_name().getText(), true);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            };
+            Observable.interval(100, TimeUnit.MILLISECONDS, Schedulers.newThread())
+                    .subscribe(disposableObserver);
+        } else {
+            if (disposableObserver != null) {
+                if (!disposableObserver.isDisposed()) {
+                    disposableObserver.dispose();
+                }
+            }
+            MichaelUtils.hideOrShowWindowsProgram(controller.getEdit_ld_name().getText(), false);
         }
     }
 
@@ -305,7 +346,6 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
     }
 
 
-
     /**
      * 全自动运行一条龙
      *
@@ -323,10 +363,10 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.REMOVE.toString())) {
                         ArrayList<LeiDianSimulatorBean> simulator = LeiDian.getInstance().getSimulatorList();
                         for (int j = 0; j < simulator.size(); j++) {
-                            if (deteleAll){
+                            if (deteleAll) {
                                 LeiDian.getInstance().removeByIndex(simulator.get(j).getPosition());
-                            }else {
-                                if ( simulator.get(j).getName().contains(controller.getEdit_ld_name().getText())) {
+                            } else {
+                                if (simulator.get(j).getName().contains(controller.getEdit_ld_name().getText())) {
                                     LeiDian.getInstance().removeByIndex(simulator.get(j).getPosition());
                                 }
                             }

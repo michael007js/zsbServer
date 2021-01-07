@@ -1,5 +1,7 @@
 package utils;
 
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.observers.DisposableObserver;
@@ -18,12 +20,39 @@ import java.util.regex.Pattern;
 
 public class MichaelUtils {
 
+    /**
+     * 显示或隐藏windows程序
+     *
+     * @param title windows程序窗口标题
+     * @param hide  是否隐藏
+     */
+    public static void hideOrShowWindowsProgram(String title, boolean hide) {
+        // 第一个参数是Windows窗体的窗体类，第二个参数是窗体的标题。
+        WinDef.HWND hwnd = User32.INSTANCE.FindWindow(null, title);
+        if (hwnd == null) {
+//            LogUtils.e("目标未启动");
+            return;
+        }
+
+        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
+        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
+
+        //User32.INSTANCE.GetForegroundWindow() //获取现在前台窗口
+        WinDef.RECT qqwin_rect = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(hwnd, qqwin_rect);
+        int qqwin_width = qqwin_rect.right - qqwin_rect.left;
+        int qqwin_height = qqwin_rect.bottom - qqwin_rect.top;
+
+        User32.INSTANCE.MoveWindow(hwnd, hide ? -9999 : 100, 100, qqwin_width, qqwin_height, true);
+        //User32.INSTANCE.PostMessage(hwnd, WinUser.WM_CLOSE, null, null);  // can be WM_QUIT in some occasio
+    }
+
     public static String launchCmd(String commandStr) {
         StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
         try {
             Process p = Runtime.getRuntime().exec(commandStr);
-            br = new BufferedReader(new InputStreamReader(p.getInputStream(),Charset.forName("GBK")));
+            br = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("GBK")));
             String line = null;
 
             while ((line = br.readLine()) != null) {
@@ -34,7 +63,7 @@ public class MichaelUtils {
             e.printStackTrace();
             return sb.toString();
         } finally {
-            if (br != null){
+            if (br != null) {
                 try {
                     br.close();
                 } catch (Exception e) {

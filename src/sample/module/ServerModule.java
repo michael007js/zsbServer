@@ -41,6 +41,7 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
         controller.getBtn_client_send().setOnAction(this::handle);
         controller.getBtn_client_connect().setOnAction(this::handle);
         controller.getBtn_client_disconnect().setOnAction(this::handle);
+        controller.getCb_restart_auto_task().setOnAction(this::handle);
         controller.getEdit_ld_time_auto().textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -126,6 +127,8 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
 //            client.close();
         } else if (event.getSource() == controller.getBtn_client_send()) {
             client.sendMessage("666");
+        } else if (event.getSource() == controller.getCb_restart_auto_task()) {
+            createAutoTask();
         }
     }
 
@@ -180,40 +183,49 @@ public class ServerModule extends BaseTabModule implements EventHandler<ActionEv
      * 创建自动任务
      */
     private void createAutoTask() {
-        if (disposableObserver != null) {
-            if (!disposableObserver.isDisposed()) {
-                disposableObserver.dispose();
-            }
-        }
-        disposableObserver = new DisposableObserver<Long>() {
-            @Override
-            public void onNext(Long aLong) {
-                removeDied();
-                if (clients.size() == 0) {
-                    leiDianModule.autoCreateLaunchInstallRunApk(true);
+        if (controller.getCb_restart_auto_task().selectedProperty().getValue().booleanValue()) {
+            if (disposableObserver != null) {
+                if (!disposableObserver.isDisposed()) {
+                    disposableObserver.dispose();
                 }
             }
+            disposableObserver = new DisposableObserver<Long>() {
+                @Override
+                public void onNext(Long aLong) {
+                    removeDied();
+                    if (clients.size() == 0) {
+                        leiDianModule.autoCreateLaunchInstallRunApk(true);
+                    }
+                }
 
-            @Override
-            public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            };
+            int minute = 2;
+            try {
+                minute = Integer.parseInt(controller.getEdit_ld_time_auto().getText());
+                minute = Math.max(minute, 1);
+            } catch (Exception e) {
+                minute = 2;
+            } finally {
+                Observable.interval(minute, TimeUnit.MINUTES, Schedulers.newThread())
+                        .subscribe(disposableObserver);
             }
-
-            @Override
-            public void onComplete() {
-
+        } else {
+            if (disposableObserver != null) {
+                if (!disposableObserver.isDisposed()) {
+                    disposableObserver.dispose();
+                }
             }
-        };
-        int minute = 2;
-        try {
-            minute = Integer.parseInt(controller.getEdit_ld_time_auto().getText());
-            minute = Math.max(minute, 1);
-        } catch (Exception e) {
-            minute = 2;
-        } finally {
-            Observable.interval(minute, TimeUnit.MINUTES, Schedulers.newThread())
-                    .subscribe(disposableObserver);
         }
+
 
     }
 }

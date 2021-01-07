@@ -79,6 +79,12 @@ public class MainController implements Initializable {
     private ChoiceBox<?> choice_ld_install_path;
 
     @FXML
+    private CheckBox cb_hide_leidian;
+
+    @FXML
+    private CheckBox cb_restart_auto_task;
+
+    @FXML
     private ListView<?> lv_ld_simulator_list;
 
     @FXML
@@ -267,6 +273,14 @@ public class MainController implements Initializable {
 
     public TextField getEdit_ld_time_auto() {
         return edit_ld_time_auto;
+    }
+
+    public CheckBox getCb_hide_leidian() {
+        return cb_hide_leidian;
+    }
+
+    public CheckBox getCb_restart_auto_task() {
+        return cb_restart_auto_task;
     }
 
     @Override
