@@ -64,10 +64,10 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                 }
             }
         });
+        createLeidianListTask();
         createHideLeidianWindowTask();
         createActionList();
         createAutoAction(true);
-        getInstallDirectory();
 
     }
 
@@ -104,8 +104,39 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
         }
     }
 
+
+    /**
+     * 创建自动获取雷电模拟器列表任务
+     */
+    private void createLeidianListTask() {
+        Observable.interval(3, TimeUnit.SECONDS, Schedulers.newThread())
+                .subscribe(new DisposableObserver<Long>() {
+                    @Override
+                    public void onNext(Long aLong) {
+                        getInstallDirectory();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+    }
+
+
+
     private DisposableObserver disposableObserver;
 
+    /**
+     * 创建隐藏或显示雷电窗口任务
+     */
     private void createHideLeidianWindowTask() {
         if (controller.getCb_hide_leidian().selectedProperty().getValue().booleanValue()) {
             if (disposableObserver != null) {
@@ -386,8 +417,13 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.REBOOT.toString())) {
                         LeiDian.getInstance().reboot(1);
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.QUIT.toString())) {
-                        LeiDian.getInstance().quit(-1);
-                        Thread.sleep(10000);
+                        if (controller.getCb_close_leidian_force().selectedProperty().getValue().booleanValue()) {
+                            CloseProcess.closeProcess("dnplayer.exe");
+                            Thread.sleep(2000);
+                        } else {
+                            LeiDian.getInstance().quit(-1);
+                            Thread.sleep(10000);
+                        }
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_DISPLAY.toString())) {
                         LeiDian.getInstance().modifyDisplay(1, 720, 1080, 240);
                     } else if (ldActionAdapter.list.get(i).toString().equals(LeiDian.Action.MODIFY_CPU.toString())) {

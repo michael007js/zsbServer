@@ -47,7 +47,7 @@ public class LeiDian {
      */
     public ArrayList<LeiDianSimulatorBean> getSimulatorList() {
         String command = commandPath + " list2";
-        LogUtils.e(command);
+//        LogUtils.e(command);
         String res = MichaelUtils.launchCmd(commandPath + " list2");
         ArrayList<LeiDianSimulatorBean> list = new ArrayList<>();
         String[] temp = res.split("\n");

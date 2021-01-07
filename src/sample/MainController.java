@@ -85,6 +85,9 @@ public class MainController implements Initializable {
     private CheckBox cb_restart_auto_task;
 
     @FXML
+    private CheckBox cb_close_leidian_force;
+
+    @FXML
     private ListView<?> lv_ld_simulator_list;
 
     @FXML
@@ -281,6 +284,10 @@ public class MainController implements Initializable {
 
     public CheckBox getCb_restart_auto_task() {
         return cb_restart_auto_task;
+    }
+
+    public CheckBox getCb_close_leidian_force() {
+        return cb_close_leidian_force;
     }
 
     @Override

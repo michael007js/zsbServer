@@ -34,8 +34,8 @@ public class MichaelUtils {
             return;
         }
 
-        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
-        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
+//        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
+//        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
 
         //User32.INSTANCE.GetForegroundWindow() //获取现在前台窗口
         WinDef.RECT qqwin_rect = new WinDef.RECT();
