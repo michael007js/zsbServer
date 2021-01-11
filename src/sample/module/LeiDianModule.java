@@ -475,6 +475,11 @@ public class LeiDianModule extends BaseTabModule implements EventHandler<ActionE
                         if (controller.getCb_close_leidian_force().selectedProperty().getValue().booleanValue()) {
                             CloseProcess.closeProcess("dnplayer.exe");
                             Thread.sleep(2000);
+                            try {
+                                MichaelUtils.resetWindowsToolbar(1920,1080,200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             LeiDian.getInstance().quit(-1);
                             Thread.sleep(10000);

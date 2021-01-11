@@ -47,6 +47,48 @@ public class MichaelUtils {
         //User32.INSTANCE.PostMessage(hwnd, WinUser.WM_CLOSE, null, null);  // can be WM_QUIT in some occasio
     }
 
+    /**
+     * 重置windows 托盘
+     *
+     * @param screenWidth  屏幕宽度
+     * @param screenHeight 屏幕高度
+     * @param delay        复位延时
+     * @throws InterruptedException
+     */
+    public static void resetWindowsToolbar(int screenWidth, int screenHeight, int delay) throws InterruptedException {
+        //任务栏窗口
+        WinDef.HWND hShellTrayWnd = User32.INSTANCE.FindWindow("Shell_TrayWnd", null);
+        //任务栏右边托盘图标+时间区
+        WinDef.HWND hTrayNotifyWnd = User32.INSTANCE.FindWindowEx(hShellTrayWnd, null, "TrayNotifyWnd", null);
+        //不同系统可能有可能没有这层
+        WinDef.HWND hSysPager = User32.INSTANCE.FindWindowEx(hTrayNotifyWnd, null, "SysPager", null);
+        //托盘图标窗口
+        WinDef.HWND hToolbarWindow32;
+        if (hSysPager == null) {
+            hToolbarWindow32 = User32.INSTANCE.FindWindowEx(hSysPager, null, "ToolbarWindow32", null);
+        } else {
+            hToolbarWindow32 = User32.INSTANCE.FindWindowEx(hTrayNotifyWnd, null, "ToolbarWindow32", null);
+        }
+        if (hToolbarWindow32 != null) {
+            WinDef.RECT r = new WinDef.RECT();
+            User32.INSTANCE.GetWindowRect(hToolbarWindow32, r);
+            int width = screenWidth - r.left;
+            int height = screenHeight - r.top;
+//            //从任务栏中间从左到右 MOUSEMOVE一遍，所有图标状态会被更新
+            WinDef.POINT orig = new WinDef.POINT();
+            if (User32.INSTANCE.GetCursorPos(orig)) {
+                LogUtils.e(orig.x, orig.y);
+            }
+            LogUtils.e(width);
+            for (int x = 0; x < width; x++) {
+//                User32.INSTANCE.SendMessage(hToolbarWindow32, 0x0200/*WM_MOUSEMOVE,获取焦点*/, null, MAKELPARAM(x, height / 2));
+                User32.INSTANCE.SetCursorPos(screenWidth - x, screenHeight - (height / 2));
+            }
+            Thread.sleep(delay);
+            User32.INSTANCE.SetCursorPos(orig.x, orig.y);
+        }
+    }
+
     public static String launchCmd(String commandStr) {
         StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
